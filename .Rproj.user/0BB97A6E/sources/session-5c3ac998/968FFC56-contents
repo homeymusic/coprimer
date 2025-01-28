@@ -1,0 +1,3 @@
+useDynLib(coprimer, .registration=TRUE)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")

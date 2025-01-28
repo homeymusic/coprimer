@@ -1,0 +1,16 @@
+Package: coprimer
+Type: Package
+Title: Exploring Coprime Numbers
+Version: 0.0.1
+Date: 2025-01-28
+Authors@R: person("Brian", "McAuliff Mulloy", role = c("aut", "cre"), email = "brian@homeymusic.com")
+Maintainer: Brian McAuliff Mulloy <brian@homeymusic.com>
+Description: Includes functions for working with coprime numbers, including the Stern-Brocot tree and Euclid's Orchard.
+License: MIT + file LICENSE
+Imports: Rcpp (>= 1.0.14)
+LinkingTo: Rcpp
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+RoxygenNote: 7.3.1
+Encoding: UTF-8

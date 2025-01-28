@@ -1,0 +1,8 @@
+---
+output: github_document
+title: "coprimer"
+---
+
+![](man/figures/coprimer_logo.png){ width=120px align=right }
+
+`coprimer` is an R package for exploring coprime numbers.
