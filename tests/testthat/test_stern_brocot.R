@@ -70,15 +70,14 @@ test_that("stern_brocot errors on invalid uncertainties", {
   upper_uncertainty <- c(0.133, 0.4)
   expect_error(
     stern_brocot(x, lower_uncertainty, upper_uncertainty),
-    "STOP: x must be greater than valid_min"
+    regexp = "STOP: x\\[0\\] = 1\\.667.* must be greater than valid_min\\[0\\] = 3\\.667.*"
   )
-
   # Valid_min > x
   lower_uncertainty <- c(2, 0.2)
   upper_uncertainty <- c(1.8, 0.4)
   expect_error(
     stern_brocot(x, lower_uncertainty, upper_uncertainty),
-    "STOP: valid_min must be greater than 0"
+    regexp = "STOP: valid_min\\[0\\] = -0\\.333.* must be greater than 0"
   )
 })
 
@@ -127,7 +126,7 @@ test_that("error with uncertainties out of bounds", {
   upper_uncertainty <- 0.02
   expect_error(
     stern_brocot(x, lower_uncertainty, upper_uncertainty),
-    "STOP: x must be greater than valid_min"
+    regexp = "STOP: x\\[0\\] = 0\\.490.* must be greater than valid_min\\[0\\] = 0\\.530.*"
   )
 })
 
