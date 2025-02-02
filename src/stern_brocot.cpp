@@ -51,11 +51,11 @@ DataFrame stern_brocot(const NumericVector x,
   NumericVector valid_max = x + upper;
 
   for (int i = 0; i < n; i++) {
-    if (x[i] <= valid_min[i]) {
-      stop("STOP: x[%d] = %f must be greater than valid_min[%d] = %f", i, x[i], i, valid_min[i]);
+    if (x[i] < valid_min[i]) {
+      stop("STOP: x[%d] = %f must be greater than or equal to valid_min[%d] = %f", i, x[i], i, valid_min[i]);
     }
-    if (valid_max[i] <= x[i]) {
-      stop("STOP: x[%d] = %f must be less than valid_max[%d] = %f", i, x[i], i, valid_max[i]);
+    if (valid_max[i] < x[i]) {
+      stop("STOP: x[%d] = %f must be less than or equal to valid_max[%d] = %f", i, x[i], i, valid_max[i]);
     }
   }
 
