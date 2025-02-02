@@ -15,13 +15,37 @@ expected_stern_brocot_columns <- c(
 )
 
 # Test with scalar x and scalar uncertainties
-test_that("stern_brocot handles scalar inputs correctly", {
+test_that("stern_brocot handles zero", {
+  x <- 0.001
+  result <- stern_brocot(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  expect_equal(result$num, 0)
+  expect_equal(result$den, 1)
+  expect_equal(result$depth, 0)
+  expect_equal(result$path, "")
+  expect_equal(result$lower_uncertainty, GABOR_UNCERTAINTY)
+  expect_equal(result$upper_uncertainty, GABOR_UNCERTAINTY)
+})
+
+# Test with scalar x and scalar uncertainties
+test_that("stern_brocot handles positive scalar inputs correctly", {
   x <- 1.667
   result <- stern_brocot(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
   expect_equal(result$num, 5)
   expect_equal(result$den, 3)
-  expect_equal(result$depth, 3)
-  expect_equal(result$path, "RLR")
+  expect_equal(result$depth, 4)
+  expect_equal(result$path, "RRLR")
+  expect_equal(result$lower_uncertainty, GABOR_UNCERTAINTY)
+  expect_equal(result$upper_uncertainty, GABOR_UNCERTAINTY)
+})
+
+# Test with scalar x and scalar uncertainties
+test_that("stern_brocot handles negative scalar inputs correctly", {
+  x <- -1.667
+  result <- stern_brocot(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  expect_equal(result$num, -5)
+  expect_equal(result$den, 3)
+  expect_equal(result$depth, 4)
+  expect_equal(result$path, "LLRL")
   expect_equal(result$lower_uncertainty, GABOR_UNCERTAINTY)
   expect_equal(result$upper_uncertainty, GABOR_UNCERTAINTY)
 })
@@ -32,8 +56,8 @@ test_that("stern_brocot handles vector x with scalar uncertainties", {
   result <- stern_brocot(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
   expect_equal(result$num, c(5, 7))
   expect_equal(result$den, c(3, 5))
-  expect_equal(result$depth, c(3, 4))
-  expect_equal(result$path, c("RLR", "RLLR"))
+  expect_equal(result$depth, c(4, 5))
+  expect_equal(result$path, c("RRLR", "RRLLR"))
 })
 
 # Test with vector x and vector uncertainties
@@ -44,8 +68,8 @@ test_that("stern_brocot handles vector x with vector uncertainties", {
   result <- stern_brocot(x, lower_uncertainty, upper_uncertainty)
   expect_equal(result$num, c(5, 3))
   expect_equal(result$den, c(3, 2))
-  expect_equal(result$depth, c(3, 2))
-  expect_equal(result$path, c("RLR", "RL"))
+  expect_equal(result$depth, c(4, 3))
+  expect_equal(result$path, c("RRLR", "RRL"))
   expect_equal(result$valid_min, x - lower_uncertainty)
   expect_equal(result$valid_max, x + upper_uncertainty)
 })
@@ -72,13 +96,6 @@ test_that("stern_brocot errors on invalid uncertainties", {
     stern_brocot(x, lower_uncertainty, upper_uncertainty),
     regexp = "STOP: x\\[0\\] = 1\\.667.* must be greater than valid_min\\[0\\] = 3\\.667.*"
   )
-  # Valid_min > x
-  lower_uncertainty <- c(2, 0.2)
-  upper_uncertainty <- c(1.8, 0.4)
-  expect_error(
-    stern_brocot(x, lower_uncertainty, upper_uncertainty),
-    regexp = "STOP: valid_min\\[0\\] = -0\\.333.* must be greater than 0"
-  )
 })
 
 # Test for depth correctness
@@ -87,15 +104,32 @@ test_that("depth_cpp computes correct values", {
   result <- stern_brocot(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
   expect_equal(result$num, 5)
   expect_equal(result$den, 3)
-  expect_equal(result$depth, 3)
-  expect_equal(result$path, "RLR")
+  expect_equal(result$depth, 4)
+  expect_equal(result$path, "RRLR")
 
   x <- sqrt(2)
   result <- stern_brocot(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
   expect_equal(result$num, 7)
   expect_equal(result$den, 5)
+  expect_equal(result$depth, 5)
+  expect_equal(result$path, "RRLLR")
+})
+
+# Test for depth correctness of negative values
+test_that("depth_cpp computes correct values for negatives", {
+  x <- -1.667
+  result <- stern_brocot(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  expect_equal(result$num, -5)
+  expect_equal(result$den, 3)
   expect_equal(result$depth, 4)
-  expect_equal(result$path, "RLLR")
+  expect_equal(result$path, "LLRL")
+
+  x <- -sqrt(2)
+  result <- stern_brocot(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  expect_equal(result$num, -7)
+  expect_equal(result$den, 5)
+  expect_equal(result$depth, 5)
+  expect_equal(result$path, "LLRRL")
 })
 
 # Test close to 0.5
@@ -105,8 +139,19 @@ test_that("close to 0.5 returns 1/2 with symmetrical uncertainty", {
   result <- stern_brocot(x, uncertainty, uncertainty)
   expect_equal(result$num, 1)
   expect_equal(result$den, 2)
-  expect_equal(result$path, "L")
-  expect_equal(result$depth, 1)
+  expect_equal(result$path, "RL")
+  expect_equal(result$depth, 2)
+})
+
+# Test close to -0.5
+test_that("close to -0.5 returns 1/2 with symmetrical uncertainty", {
+  x <- -0.49
+  uncertainty <- 0.03
+  result <- stern_brocot(x, uncertainty, uncertainty)
+  expect_equal(result$num, -1)
+  expect_equal(result$den, 2)
+  expect_equal(result$path, "LR")
+  expect_equal(result$depth, 2)
 })
 
 # Test close to 0.5 with asymmetrical uncertainty
@@ -116,6 +161,16 @@ test_that("close to 0.5 returns 1/2 with asymmetrical uncertainty", {
   upper_uncertainty <- 0.02
   result <- stern_brocot(x, lower_uncertainty, upper_uncertainty)
   expect_equal(result$num, 1)
+  expect_equal(result$den, 2)
+})
+
+# Test close to -0.5 with asymmetrical uncertainty
+test_that("close to -0.5 returns 1/2 with asymmetrical uncertainty", {
+  x <- -0.49
+  lower_uncertainty <- 0.04
+  upper_uncertainty <- 0.02
+  result <- stern_brocot(x, lower_uncertainty, upper_uncertainty)
+  expect_equal(result$num, -1)
   expect_equal(result$den, 2)
 })
 

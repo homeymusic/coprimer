@@ -51,9 +51,6 @@ DataFrame stern_brocot(const NumericVector x,
   NumericVector valid_max = x + upper;
 
   for (int i = 0; i < n; i++) {
-    if (valid_min[i] <= 0) {
-      stop("STOP: valid_min[%d] = %f must be greater than 0", i, valid_min[i]);
-    }
     if (x[i] <= valid_min[i]) {
       stop("STOP: x[%d] = %f must be greater than valid_min[%d] = %f", i, x[i], i, valid_min[i]);
     }
@@ -68,11 +65,11 @@ DataFrame stern_brocot(const NumericVector x,
 
   for (int i = 0; i < n; i++) {
     std::vector<char> path;
-    int left_num = 0, left_den = 1;
-    int mediant_num = 1, mediant_den = 1;
+    int left_num = -1, left_den = 0;
+    int mediant_num = 0, mediant_den = 1;
     int right_num = 1, right_den = 0;
 
-    double approximation = 1.0;
+    double approximation = 0.0;
 
     while ((approximation < valid_min[i]) || (approximation > valid_max[i])) {
       if (approximation < valid_min[i]) {
