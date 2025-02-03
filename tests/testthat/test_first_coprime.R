@@ -199,4 +199,15 @@ test_that("the redundnacy measure returns expected values", {
   result <- first_coprime(x, uncertainty, uncertainty)
   expect_equal(result$redundancy, expected)
 })
+test_that('paths are symmetrical around 0 and 1', {
+  r = first_coprime(106/333, 0.000001, 0.000001)
+  expect_equal(r$path,"RLLLRRRRRRRLLLLLLLLLLLLLL")
+  r = first_coprime(-106/333, 0.000001, 0.000001)
+  expect_equal(r$path,"LRRRLLLLLLLRRRRRRRRRRRRRR")
 
+  r = first_coprime(333/106, 0.000001, 0.000001)
+  expect_equal(r$path,"RRRRLLLLLLLRRRRRRRRRRRRRR")
+  r = first_coprime(-333/106, 0.000001, 0.000001)
+  expect_equal(r$path,"LLLLRRRRRRRLLLLLLLLLLLLLL")
+
+})
