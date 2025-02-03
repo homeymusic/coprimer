@@ -47,16 +47,16 @@ DataFrame stern_brocot(const NumericVector x,
   NumericVector valid_max = x + upper;
 
   for (int i = 0; i < n; i++) {
-    if (x[i] < valid_min[i]) {
+    if (!(valid_min[i] < x[i])) {
       stop("STOP: x[%d] = %f must be greater than or equal to valid_min[%d] = %f", i, x[i], i, valid_min[i]);
     }
-    if (valid_max[i] < x[i]) {
+    if (!(x[i] < valid_max[i])) {
       stop("STOP: x[%d] = %f must be less than or equal to valid_max[%d] = %f", i, x[i], i, valid_max[i]);
     }
   }
 
   IntegerVector nums(n), dens(n), depths(n);
-  NumericVector approximations(n), errors(n);
+  NumericVector approximations(n), errors(n), redundancy(n);
   CharacterVector paths(n);
 
   for (int i = 0; i < n; i++) {
@@ -89,6 +89,7 @@ DataFrame stern_brocot(const NumericVector x,
     dens[i] = mediant_den;
     approximations[i] = approximation;
     errors[i] = round_to_precision(approximation - x[i]);
+    redundancy[i] = 1.0 / (abs(mediant_num) + abs(mediant_den));
     depths[i] = path.size();
     paths[i] = std::string(path.begin(), path.end());
   }
@@ -99,6 +100,7 @@ DataFrame stern_brocot(const NumericVector x,
     _["approximation"] = approximations,
     _["x"] = x,
     _["error"] = errors,
+    _["redundancy"] = redundancy,
     _["depth"] = depths,
     _["path"] = paths,
     _["lower_uncertainty"] = lower,

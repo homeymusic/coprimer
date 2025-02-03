@@ -204,3 +204,15 @@ test_that("x = 1 returns 1/1", {
   expect_equal(result$num, 1)
   expect_equal(result$den, 1)
 })
+
+# Test redundancy
+test_that("the redundnacy measure returns expected values", {
+  x <- c(0,1,1/2,1/3,5/3,6/7)
+  x = c(x,-x)
+  expected = c(1,0.5,1/3,1/4,1/8,1/13)
+  expected = c(expected, expected)
+  uncertainty <- 0.01
+  result <- stern_brocot(x, uncertainty, uncertainty)
+  expect_equal(result$redundancy, expected)
+})
+
