@@ -6,7 +6,7 @@ inline double round_to_precision(double value, int precision = 15) {
   return std::round(value * scale) / scale;
 }
 
-//' stern_brocot
+//' stern_brocot_first
 //'
 //' Approximate a real number as a coprime rational fraction using the Stern-Brocot tree
 //'
@@ -28,9 +28,9 @@ inline double round_to_precision(double value, int precision = 15) {
 //'   - `valid_max`: The upper bound of the uncertainty range (`x + upper_uncertainty`).
 //'
 // [[Rcpp::export]]
-DataFrame stern_brocot(const NumericVector x,
-                       const NumericVector lower_uncertainty,
-                       const NumericVector upper_uncertainty) {
+DataFrame stern_brocot_first(const NumericVector x,
+                             const NumericVector lower_uncertainty,
+                             const NumericVector upper_uncertainty) {
 
   int n = x.size();
   if (lower_uncertainty.size() != 1 && lower_uncertainty.size() != n) {
