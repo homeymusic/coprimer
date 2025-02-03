@@ -1,59 +1,43 @@
-GABOR_UNCERTAINTY <- 1 / (4 * pi)
-
-expected_stern_brocot_first_columns <- c(
-  "num",
-  "den",
-  "approximation",
-  "x",
-  "error",
-  "depth",
-  "path",
-  "lower_uncertainty",
-  "upper_uncertainty",
-  "valid_min",
-  "valid_max"
-)
-
 # Test with scalar x and scalar uncertainties
-test_that("stern_brocot_first handles zero", {
+test_that("first_coprime handles zero", {
   x <- 0.001
-  result <- stern_brocot_first(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  result <- first_coprime(x, 0.08, 0.08)
   expect_equal(result$num, 0)
   expect_equal(result$den, 1)
   expect_equal(result$depth, 0)
   expect_equal(result$path, "")
-  expect_equal(result$lower_uncertainty, GABOR_UNCERTAINTY)
-  expect_equal(result$upper_uncertainty, GABOR_UNCERTAINTY)
+  expect_equal(result$lower_uncertainty, 0.08)
+  expect_equal(result$upper_uncertainty, 0.08)
 })
 
 # Test with scalar x and scalar uncertainties
-test_that("stern_brocot_first handles positive scalar inputs correctly", {
+test_that("first_coprime handles positive scalar inputs correctly", {
   x <- 1.667
-  result <- stern_brocot_first(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  result <- first_coprime(x, 0.08, 0.08)
   expect_equal(result$num, 5)
   expect_equal(result$den, 3)
   expect_equal(result$depth, 4)
   expect_equal(result$path, "RRLR")
-  expect_equal(result$lower_uncertainty, GABOR_UNCERTAINTY)
-  expect_equal(result$upper_uncertainty, GABOR_UNCERTAINTY)
+  expect_equal(result$lower_uncertainty, 0.08)
+  expect_equal(result$upper_uncertainty, 0.08)
 })
 
 # Test with scalar x and scalar uncertainties
-test_that("stern_brocot_first handles negative scalar inputs correctly", {
+test_that("first_coprime handles negative scalar inputs correctly", {
   x <- -1.667
-  result <- stern_brocot_first(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  result <- first_coprime(x, 0.08, 0.08)
   expect_equal(result$num, -5)
   expect_equal(result$den, 3)
   expect_equal(result$depth, 4)
   expect_equal(result$path, "LLRL")
-  expect_equal(result$lower_uncertainty, GABOR_UNCERTAINTY)
-  expect_equal(result$upper_uncertainty, GABOR_UNCERTAINTY)
+  expect_equal(result$lower_uncertainty, 0.08)
+  expect_equal(result$upper_uncertainty, 0.08)
 })
 
 # Test with vector x and scalar uncertainties
-test_that("stern_brocot_first handles vector x with scalar uncertainties", {
+test_that("first_coprime handles vector x with scalar uncertainties", {
   x <- c(1.667, sqrt(2))
-  result <- stern_brocot_first(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  result <- first_coprime(x, 0.08, 0.08)
   expect_equal(result$num, c(5, 7))
   expect_equal(result$den, c(3, 5))
   expect_equal(result$depth, c(4, 5))
@@ -61,11 +45,11 @@ test_that("stern_brocot_first handles vector x with scalar uncertainties", {
 })
 
 # Test with vector x and vector uncertainties
-test_that("stern_brocot_first handles vector x with vector uncertainties", {
+test_that("first_coprime handles vector x with vector uncertainties", {
   x <- c(1.667, sqrt(2))
   lower_uncertainty <- c(0.067, 0.2)
   upper_uncertainty <- c(0.133, 0.4)
-  result <- stern_brocot_first(x, lower_uncertainty, upper_uncertainty)
+  result <- first_coprime(x, lower_uncertainty, upper_uncertainty)
   expect_equal(result$num, c(5, 3))
   expect_equal(result$den, c(3, 2))
   expect_equal(result$depth, c(4, 3))
@@ -75,25 +59,25 @@ test_that("stern_brocot_first handles vector x with vector uncertainties", {
 })
 
 # Test for mismatched vector lengths
-test_that("stern_brocot_first errors on mismatched vector lengths", {
+test_that("first_coprime errors on mismatched vector lengths", {
   x <- c(1.667, sqrt(2))
   lower_uncertainty <- c(0.067, 0.068, 0.065)
   upper_uncertainty <- c(0.133, 0.4)
   expect_error(
-    stern_brocot_first(x, lower_uncertainty, upper_uncertainty),
+    first_coprime(x, lower_uncertainty, upper_uncertainty),
     "lower_uncertainty must either be of length 1 or match the length of x"
   )
 })
 
 # Test for invalid uncertainties
-test_that("stern_brocot_first errors on invalid uncertainties", {
+test_that("first_coprime errors on invalid uncertainties", {
   x <- c(1.667, sqrt(2))
 
   # Invalid lower_uncertainty (negative value)
   lower_uncertainty <- c(-2, 0.2)
   upper_uncertainty <- c(0.133, 0.4)
   expect_error(
-    stern_brocot_first(x, lower_uncertainty, upper_uncertainty),
+    first_coprime(x, lower_uncertainty, upper_uncertainty),
     regexp = "STOP: x\\[0\\] = 1\\.667.* must be greater than or equal to valid_min\\[0\\] = 3\\.667.*"
   )
 })
@@ -101,14 +85,14 @@ test_that("stern_brocot_first errors on invalid uncertainties", {
 # Test for depth correctness
 test_that("depth_cpp computes correct values", {
   x <- 1.667
-  result <- stern_brocot_first(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  result <- first_coprime(x, 0.08, 0.08)
   expect_equal(result$num, 5)
   expect_equal(result$den, 3)
   expect_equal(result$depth, 4)
   expect_equal(result$path, "RRLR")
 
   x <- sqrt(2)
-  result <- stern_brocot_first(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  result <- first_coprime(x, 0.08, 0.08)
   expect_equal(result$num, 7)
   expect_equal(result$den, 5)
   expect_equal(result$depth, 5)
@@ -118,14 +102,14 @@ test_that("depth_cpp computes correct values", {
 # Test for depth correctness of negative values
 test_that("depth_cpp computes correct values for negatives", {
   x <- -1.667
-  result <- stern_brocot_first(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  result <- first_coprime(x, 0.08, 0.08)
   expect_equal(result$num, -5)
   expect_equal(result$den, 3)
   expect_equal(result$depth, 4)
   expect_equal(result$path, "LLRL")
 
   x <- -sqrt(2)
-  result <- stern_brocot_first(x, GABOR_UNCERTAINTY, GABOR_UNCERTAINTY)
+  result <- first_coprime(x, 0.08, 0.08)
   expect_equal(result$num, -7)
   expect_equal(result$den, 5)
   expect_equal(result$depth, 5)
@@ -136,7 +120,7 @@ test_that("depth_cpp computes correct values for negatives", {
 test_that("close to 0.5 returns 1/2 with symmetrical uncertainty", {
   x <- 0.49
   uncertainty <- 0.03
-  result <- stern_brocot_first(x, uncertainty, uncertainty)
+  result <- first_coprime(x, uncertainty, uncertainty)
   expect_equal(result$num, 1)
   expect_equal(result$den, 2)
   expect_equal(result$path, "RL")
@@ -147,7 +131,7 @@ test_that("close to 0.5 returns 1/2 with symmetrical uncertainty", {
 test_that("close to -0.5 returns 1/2 with symmetrical uncertainty", {
   x <- -0.49
   uncertainty <- 0.03
-  result <- stern_brocot_first(x, uncertainty, uncertainty)
+  result <- first_coprime(x, uncertainty, uncertainty)
   expect_equal(result$num, -1)
   expect_equal(result$den, 2)
   expect_equal(result$path, "LR")
@@ -159,7 +143,7 @@ test_that("close to 0.5 returns 1/2 with asymmetrical uncertainty", {
   x <- 0.49
   lower_uncertainty <- 0.04
   upper_uncertainty <- 0.02
-  result <- stern_brocot_first(x, lower_uncertainty, upper_uncertainty)
+  result <- first_coprime(x, lower_uncertainty, upper_uncertainty)
   expect_equal(result$num, 1)
   expect_equal(result$den, 2)
 })
@@ -169,7 +153,7 @@ test_that("close to -0.5 returns 1/2 with asymmetrical uncertainty", {
   x <- -0.49
   lower_uncertainty <- 0.04
   upper_uncertainty <- 0.02
-  result <- stern_brocot_first(x, lower_uncertainty, upper_uncertainty)
+  result <- first_coprime(x, lower_uncertainty, upper_uncertainty)
   expect_equal(result$num, -1)
   expect_equal(result$den, 2)
 })
@@ -180,7 +164,7 @@ test_that("error with uncertainties out of bounds", {
   lower_uncertainty <- -0.04
   upper_uncertainty <- 0.02
   expect_error(
-    stern_brocot_first(x, lower_uncertainty, upper_uncertainty),
+    first_coprime(x, lower_uncertainty, upper_uncertainty),
     regexp = "STOP: x\\[0\\] = 0\\.490.* must be greater than or equal to valid_min\\[0\\] = 0\\.530.*"
   )
 })
@@ -189,7 +173,7 @@ test_that("error with uncertainties out of bounds", {
 test_that("result$num can be any integer and result$den must be a positive integer", {
   x <- 0.49
   uncertainty <- 0.03
-  result <- stern_brocot_first(x, uncertainty, uncertainty)
+  result <- first_coprime(x, uncertainty, uncertainty)
   expect_true(is.integer(result$num))
   expect_true(result$num > 0)
   expect_true(is.integer(result$den))
@@ -200,7 +184,7 @@ test_that("result$num can be any integer and result$den must be a positive integ
 test_that("x = 1 returns 1/1", {
   x <- 1
   uncertainty <- 0.01
-  result <- stern_brocot_first(x, uncertainty, uncertainty)
+  result <- first_coprime(x, uncertainty, uncertainty)
   expect_equal(result$num, 1)
   expect_equal(result$den, 1)
 })
@@ -212,7 +196,7 @@ test_that("the redundnacy measure returns expected values", {
   expected = c(1,0.5,1/3,1/4,1/8,1/13)
   expected = c(expected, expected)
   uncertainty <- 0.01
-  result <- stern_brocot_first(x, uncertainty, uncertainty)
+  result <- first_coprime(x, uncertainty, uncertainty)
   expect_equal(result$redundancy, expected)
 })
 
