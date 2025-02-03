@@ -6,10 +6,6 @@ inline double round_to_precision(double value, int precision = 15) {
   return std::round(value * scale) / scale;
 }
 
-inline std::string as_string_cpp(const std::vector<char>& path) {
-  return std::string(path.begin(), path.end());
-}
-
 //' stern_brocot
 //'
 //' Approximate a real number as a coprime rational fraction using the Stern-Brocot tree
@@ -94,7 +90,7 @@ DataFrame stern_brocot(const NumericVector x,
     approximations[i] = approximation;
     errors[i] = round_to_precision(approximation - x[i]);
     depths[i] = path.size();
-    paths[i] = as_string_cpp(path);
+    paths[i] = std::string(path.begin(), path.end());
   }
 
   return DataFrame::create(
