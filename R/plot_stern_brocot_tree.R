@@ -85,10 +85,20 @@ plot_stern_brocot_tree <- function(depth = 4, path_str = "") {
   }
 
   # Start building the ggplot object with the standard edges and nodes.
+
+
+  if(nchar(path_str) > 0) {
+    tree_color = "darkgray"
+  } else {
+    tree_color = "black"
+  }
+
   p <- ggplot2::ggplot() +
     ggplot2::geom_segment(data = edges, ggplot2::aes(x = .data$x, y = .data$y, xend = .data$xend, yend = .data$yend),
-                          color = "gray", size = 0.8) +
-    ggplot2::geom_point(data = tree, ggplot2::aes(x = .data$x, y = .data$y), color = "gray", size = 3) +
+                          color = "gray", linewidth = 0.8) +
+    ggplot2::geom_point(data = tree, ggplot2::aes(x = .data$x, y = .data$y), color = tree_color, size = 3) +
+    ggplot2::geom_text(data = tree, ggplot2::aes(x = .data$x, y = .data$y + 0.1, label = .data$label),
+                       vjust = -0.5, color = tree_color, size = 3) +
     ggplot2::labs(title = "", x = "", y = "") +
     ggplot2::theme_minimal() +
     ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
@@ -141,15 +151,14 @@ plot_stern_brocot_tree <- function(depth = 4, path_str = "") {
     p <- p +
       ggplot2::geom_segment(data = highlight_edges,
                             ggplot2::aes(x = .data$x, y = .data$y, xend = .data$xend, yend = .data$yend),
-                            color = "black", size = 1.2) +
+                            color = "black", linewidth = 1.2) +
       ggplot2::geom_point(data = tree[path_nodes, ],
                           ggplot2::aes(x = .data$x, y = .data$y),
-                          color = "black", size = 4)
+                          color = "black", size = 4) +
+      ggplot2::geom_text(data = tree[path_nodes, ], ggplot2::aes(x = .data$x, y = .data$y + 0.1, label = .data$label),
+                         vjust = -0.5, color = "black", size = 3)
   }
 
-  p <- p +
-    ggplot2::geom_text(data = tree, ggplot2::aes(x = .data$x, y = .data$y, label = .data$label),
-                       vjust = -0.5, size = 3)
 
   print(p)
   invisible(p)

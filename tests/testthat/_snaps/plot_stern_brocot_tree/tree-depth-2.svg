@@ -25,31 +25,31 @@
   </clipPath>
 </defs>
 <g clip-path='url(#cpMjAuODF8NzE0LjUyfDIyLjc4fDU1NS4xOQ==)'>
-<line x1='210.01' y1='369.65' x2='131.18' y2='530.99' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
-<line x1='367.67' y1='208.32' x2='210.01' y2='369.65' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
-<line x1='210.01' y1='369.65' x2='288.84' y2='530.99' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
-<line x1='52.34' y1='46.98' x2='367.67' y2='208.32' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
-<line x1='682.99' y1='46.98' x2='367.67' y2='208.32' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
-<line x1='525.33' y1='369.65' x2='446.50' y2='530.99' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
-<line x1='367.67' y1='208.32' x2='525.33' y2='369.65' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
-<line x1='525.33' y1='369.65' x2='604.16' y2='530.99' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
-<circle cx='52.34' cy='46.98' r='3.56' style='stroke-width: 0.71; stroke: #BEBEBE; fill: #BEBEBE;' />
-<circle cx='131.18' cy='530.99' r='3.56' style='stroke-width: 0.71; stroke: #BEBEBE; fill: #BEBEBE;' />
-<circle cx='210.01' cy='369.65' r='3.56' style='stroke-width: 0.71; stroke: #BEBEBE; fill: #BEBEBE;' />
-<circle cx='288.84' cy='530.99' r='3.56' style='stroke-width: 0.71; stroke: #BEBEBE; fill: #BEBEBE;' />
-<circle cx='367.67' cy='208.32' r='3.56' style='stroke-width: 0.71; stroke: #BEBEBE; fill: #BEBEBE;' />
-<circle cx='446.50' cy='530.99' r='3.56' style='stroke-width: 0.71; stroke: #BEBEBE; fill: #BEBEBE;' />
-<circle cx='525.33' cy='369.65' r='3.56' style='stroke-width: 0.71; stroke: #BEBEBE; fill: #BEBEBE;' />
-<circle cx='604.16' cy='530.99' r='3.56' style='stroke-width: 0.71; stroke: #BEBEBE; fill: #BEBEBE;' />
-<circle cx='682.99' cy='46.98' r='3.56' style='stroke-width: 0.71; stroke: #BEBEBE; fill: #BEBEBE;' />
+<line x1='210.01' y1='374.86' x2='131.18' y2='530.99' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
+<line x1='367.67' y1='218.73' x2='210.01' y2='374.86' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
+<line x1='210.01' y1='374.86' x2='288.84' y2='530.99' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
+<line x1='52.34' y1='62.60' x2='367.67' y2='218.73' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
+<line x1='682.99' y1='62.60' x2='367.67' y2='218.73' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
+<line x1='525.33' y1='374.86' x2='446.50' y2='530.99' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
+<line x1='367.67' y1='218.73' x2='525.33' y2='374.86' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
+<line x1='525.33' y1='374.86' x2='604.16' y2='530.99' style='stroke-width: 1.71; stroke: #BEBEBE; stroke-linecap: butt;' />
+<circle cx='52.34' cy='62.60' r='3.56' style='stroke-width: 0.71; fill: #000000;' />
+<circle cx='131.18' cy='530.99' r='3.56' style='stroke-width: 0.71; fill: #000000;' />
+<circle cx='210.01' cy='374.86' r='3.56' style='stroke-width: 0.71; fill: #000000;' />
+<circle cx='288.84' cy='530.99' r='3.56' style='stroke-width: 0.71; fill: #000000;' />
+<circle cx='367.67' cy='218.73' r='3.56' style='stroke-width: 0.71; fill: #000000;' />
+<circle cx='446.50' cy='530.99' r='3.56' style='stroke-width: 0.71; fill: #000000;' />
+<circle cx='525.33' cy='374.86' r='3.56' style='stroke-width: 0.71; fill: #000000;' />
+<circle cx='604.16' cy='530.99' r='3.56' style='stroke-width: 0.71; fill: #000000;' />
+<circle cx='682.99' cy='62.60' r='3.56' style='stroke-width: 0.71; fill: #000000;' />
 <text x='52.34' y='44.05' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='14.71px' lengthAdjust='spacingAndGlyphs'>-1/0</text>
-<text x='131.18' y='528.05' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='14.71px' lengthAdjust='spacingAndGlyphs'>-2/1</text>
-<text x='210.01' y='366.72' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='14.71px' lengthAdjust='spacingAndGlyphs'>-1/1</text>
-<text x='288.84' y='528.05' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='14.71px' lengthAdjust='spacingAndGlyphs'>-1/2</text>
-<text x='367.67' y='205.38' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='11.87px' lengthAdjust='spacingAndGlyphs'>0/1</text>
-<text x='446.50' y='528.05' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='11.87px' lengthAdjust='spacingAndGlyphs'>1/2</text>
-<text x='525.33' y='366.72' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='11.87px' lengthAdjust='spacingAndGlyphs'>1/1</text>
-<text x='604.16' y='528.05' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='11.87px' lengthAdjust='spacingAndGlyphs'>2/1</text>
+<text x='131.18' y='512.44' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='14.71px' lengthAdjust='spacingAndGlyphs'>-2/1</text>
+<text x='210.01' y='356.31' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='14.71px' lengthAdjust='spacingAndGlyphs'>-1/1</text>
+<text x='288.84' y='512.44' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='14.71px' lengthAdjust='spacingAndGlyphs'>-1/2</text>
+<text x='367.67' y='200.18' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='11.87px' lengthAdjust='spacingAndGlyphs'>0/1</text>
+<text x='446.50' y='512.44' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='11.87px' lengthAdjust='spacingAndGlyphs'>1/2</text>
+<text x='525.33' y='356.31' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='11.87px' lengthAdjust='spacingAndGlyphs'>1/1</text>
+<text x='604.16' y='512.44' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='11.87px' lengthAdjust='spacingAndGlyphs'>2/1</text>
 <text x='682.99' y='44.05' text-anchor='middle' style='font-size: 8.54px; font-family: sans;' textLength='11.87px' lengthAdjust='spacingAndGlyphs'>1/0</text>
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
