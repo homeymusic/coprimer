@@ -10,6 +10,17 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// stern_brocot_tree
+DataFrame stern_brocot_tree(const int x);
+RcppExport SEXP _coprimer_stern_brocot_tree(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(stern_brocot_tree(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // first_coprime
 DataFrame first_coprime(const NumericVector x, const NumericVector lower_uncertainty, const NumericVector upper_uncertainty);
 RcppExport SEXP _coprimer_first_coprime(SEXP xSEXP, SEXP lower_uncertaintySEXP, SEXP upper_uncertaintySEXP) {
@@ -25,6 +36,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_coprimer_stern_brocot_tree", (DL_FUNC) &_coprimer_stern_brocot_tree, 1},
     {"_coprimer_first_coprime", (DL_FUNC) &_coprimer_first_coprime, 3},
     {NULL, NULL, 0}
 };

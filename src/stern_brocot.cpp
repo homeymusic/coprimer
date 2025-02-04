@@ -5,6 +5,107 @@
 using namespace Rcpp;
 using namespace std;
 
+// Function to insert mediants into a linked list in-place
+void insert_mediants(list<int>& nums,
+                     list<int>& dens,
+                     list<string>& labels,
+                     list<int>& levels,
+                     list<string>& left_parents,
+                     list<string>& right_parents,
+                     int current_depth, int max_depth) {
+  if (current_depth > max_depth) return;  // Stop when max depth is reached
+
+  auto num_it = nums.begin();
+  auto den_it = dens.begin();
+  auto label_it = labels.begin();
+  auto level_it = levels.begin();
+  auto left_parent_it = left_parents.begin();
+  auto right_parent_it = right_parents.begin();
+
+  auto next_num_it = next(num_it);
+  auto next_den_it = next(den_it);
+  auto next_label_it = next(label_it);
+  auto next_level_it = next(level_it);
+  auto next_left_parent_it = next(left_parent_it);
+  auto next_right_parent_it = next(right_parent_it);
+
+  while (next_num_it != nums.end()) {
+    // Compute mediant
+    int mediant_num = *num_it + *next_num_it;
+    int mediant_den = *den_it + *next_den_it;
+
+    // Insert mediant between current and next fraction
+    next_left_parent_it = left_parents.insert(next_left_parent_it, *label_it);
+    next_right_parent_it = right_parents.insert(next_right_parent_it, *next_label_it);
+    next_num_it = nums.insert(next_num_it, mediant_num);
+    next_den_it = dens.insert(next_den_it, mediant_den);
+    next_label_it = labels.insert(next_label_it, std::to_string(mediant_num) + "/" + std::to_string(mediant_den));
+    next_level_it = levels.insert(next_level_it, current_depth);
+
+    // Move iterators forward (skip the inserted mediant)
+    advance(next_num_it, 1);
+    advance(next_den_it, 1);
+    advance(next_label_it, 1);
+    advance(next_level_it, 1);
+    advance(next_left_parent_it, 1);
+    advance(next_right_parent_it, 1);
+
+    // Move to the next original fraction
+    num_it = next_num_it;
+    den_it = next_den_it;
+    label_it = next_label_it;
+    level_it = next_level_it;
+    left_parent_it = next_left_parent_it;
+    right_parent_it = next_right_parent_it;
+
+    next_num_it = next(num_it);
+    next_den_it = next(den_it);
+    next_label_it = next(label_it);
+    next_level_it = next(level_it);
+    next_left_parent_it = next(left_parent_it);
+    next_right_parent_it = next(right_parent_it);
+  }
+
+  // Recur for the next depth level
+  insert_mediants(nums, dens, labels, levels, left_parents, right_parents, current_depth + 1, max_depth);
+}
+
+//' stern_brocot_tree
+//'
+//' Generate the Stern-Brocot tree up to a given depth using `std::list`.
+//'
+//' @param x The depth of the tree to generate.
+//'
+//' @return A data frame containing:
+//'   - `num`: Numerator of the fraction.
+//'   - `den`: Denominator of the fraction.
+//'   - `depth`: The depth level in the Stern-Brocot tree.
+//'
+// [[Rcpp::export]]
+DataFrame stern_brocot_tree(const int x) {
+  if (x < 0) stop("Depth must be non-negative.");
+
+  // Initialize the list with pre-level
+  list<int> nums             = {-1, 0, 1};
+  list<int> dens             = { 0, 1, 0};
+  list<string> labels        = {"-1/0","0/1","1/0"};
+  list<int> levels           = {-1,-0,-1};
+  list<string> left_parents  = {"","-1/0",""};
+  list<string> right_parents = {"","1/0",""};
+
+  insert_mediants(nums, dens, labels, levels, left_parents, right_parents, 1, x);
+
+  return DataFrame::create(
+    _["num"] = nums,
+    _["den"] = dens,
+    _["label"] = labels,
+    _["depth"] = levels,
+    _["left_parent"] = left_parents,
+    _["right_parent"] = right_parents
+  );
+}
+
+
 inline double round_to_precision(double value, int precision = 15) {
   double scale = std::pow(10.0, precision);
   return std::round(value * scale) / scale;
