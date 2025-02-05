@@ -52,7 +52,7 @@ plot_coprime_quantum_blob <- function(x, p,
   p_circles <- ggplot2::ggplot(grid_df, ggplot2::aes(x = x, y = p,
                                                      size = redundancy_product,
                                                      fill = redundancy_product)) +
-    ggplot2::geom_point(shape = 21, color = "black", stroke = 0.2) +  # bubbles with black borders
+    ggplot2::geom_point(shape = 21, color = "black", stroke = 0.1) +  # bubbles with black borders
     ggplot2::scale_size(range = c(0.5, 8)) +
     ggplot2::scale_fill_gradient(low = "lightgray", high = "black") +
     ggplot2::coord_fixed() +
@@ -70,11 +70,11 @@ plot_coprime_quantum_blob <- function(x, p,
 
   # 10. Overlay the ellipse.
   #     Use inherit.aes = FALSE so that the ellipse is not affected by the global mapping.
-  p_circles <- p_circles +
-    ggplot2::geom_path(data = ellipse_df,
-                       ggplot2::aes(x = x, y = p),
-                       inherit.aes = FALSE,
-                       color = "gray", linewidth = 1)
+  # p_circles <- p_circles +
+  #   ggplot2::geom_path(data = ellipse_df,
+  #                      ggplot2::aes(x = x, y = p),
+  #                      inherit.aes = FALSE,
+  #                      color = "gray", linewidth = 0)
 
   # 11. Display the plot.
   print(p_circles)

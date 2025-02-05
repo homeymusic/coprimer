@@ -9,7 +9,8 @@ Description: Includes functions for working with coprime numbers, including the 
 License: MIT + file LICENSE
 Imports:
     Rcpp (>= 1.0.14),
-    ggplot2
+    ggplot2,
+    plotly
 LinkingTo: Rcpp
 Suggests: 
     testthat (>= 3.0.0),
