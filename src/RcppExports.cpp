@@ -34,10 +34,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// nearby_coprime
+DataFrame nearby_coprime(const NumericVector x, const NumericVector lower_uncertainty, const NumericVector upper_uncertainty);
+RcppExport SEXP _coprimer_nearby_coprime(SEXP xSEXP, SEXP lower_uncertaintySEXP, SEXP upper_uncertaintySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const NumericVector >::type lower_uncertainty(lower_uncertaintySEXP);
+    Rcpp::traits::input_parameter< const NumericVector >::type upper_uncertainty(upper_uncertaintySEXP);
+    rcpp_result_gen = Rcpp::wrap(nearby_coprime(x, lower_uncertainty, upper_uncertainty));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_coprimer_stern_brocot_tree", (DL_FUNC) &_coprimer_stern_brocot_tree, 1},
     {"_coprimer_first_coprime", (DL_FUNC) &_coprimer_first_coprime, 3},
+    {"_coprimer_nearby_coprime", (DL_FUNC) &_coprimer_nearby_coprime, 3},
     {NULL, NULL, 0}
 };
 

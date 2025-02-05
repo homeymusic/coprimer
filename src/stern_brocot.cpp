@@ -152,10 +152,10 @@ DataFrame first_coprime(const NumericVector x,
   NumericVector valid_max = x + upper;
 
   for (int i = 0; i < n; i++) {
-    if (!(valid_min[i] < x[i])) {
+    if (!(valid_min[i] <= x[i])) {
       stop("STOP: x[%d] = %f must be greater than or equal to valid_min[%d] = %f", i, x[i], i, valid_min[i]);
     }
-    if (!(x[i] < valid_max[i])) {
+    if (!(x[i] <= valid_max[i])) {
       stop("STOP: x[%d] = %f must be less than or equal to valid_max[%d] = %f", i, x[i], i, valid_max[i]);
     }
   }
@@ -213,3 +213,61 @@ DataFrame first_coprime(const NumericVector x,
   );
 }
 
+// [[Rcpp::export]]
+DataFrame nearby_coprime(const NumericVector x,
+                          const NumericVector lower_uncertainty,
+                          const NumericVector upper_uncertainty) {
+  int n = x.size();
+
+  // Call first_coprime() with one uncertainty forced to zero
+  DataFrame lower_cp = first_coprime(x, lower_uncertainty, NumericVector::create(0.0));
+  DataFrame upper_cp = first_coprime(x, NumericVector::create(0.0), upper_uncertainty);
+
+  // Allocate output vectors
+  IntegerVector num(n), den(n), depth(n);
+  NumericVector approx(n), err(n);
+  CharacterVector path(n);
+
+  // For each element, choose the fraction whose approximation is closest to x
+  for (int i = 0; i < n; i++) {
+    double d_lower = std::abs(as<NumericVector>(lower_cp["approximation"])[i] - x[i]);
+    double d_upper = std::abs(as<NumericVector>(upper_cp["approximation"])[i] - x[i]);
+    if (d_lower <= d_upper) {
+      num[i]    = as<IntegerVector>(lower_cp["num"])[i];
+      den[i]    = as<IntegerVector>(lower_cp["den"])[i];
+      approx[i] = as<NumericVector>(lower_cp["approximation"])[i];
+      err[i]    = as<NumericVector>(lower_cp["error"])[i];
+      depth[i]  = as<IntegerVector>(lower_cp["depth"])[i];
+      path[i]   = as<CharacterVector>(lower_cp["path"])[i];
+    } else {
+      num[i]    = as<IntegerVector>(upper_cp["num"])[i];
+      den[i]    = as<IntegerVector>(upper_cp["den"])[i];
+      approx[i] = as<NumericVector>(upper_cp["approximation"])[i];
+      err[i]    = as<NumericVector>(upper_cp["error"])[i];
+      depth[i]  = as<IntegerVector>(upper_cp["depth"])[i];
+      path[i]   = as<CharacterVector>(upper_cp["path"])[i];
+    }
+  }
+
+  // Ensure the uncertainties are of length n
+  NumericVector final_lower = (lower_uncertainty.size() == 1 ? NumericVector(n, lower_uncertainty[0])
+                                 : lower_uncertainty);
+  NumericVector final_upper = (upper_uncertainty.size() == 1 ? NumericVector(n, upper_uncertainty[0])
+                                 : upper_uncertainty);
+  NumericVector valid_min = x - final_lower;
+  NumericVector valid_max = x + final_upper;
+
+  return DataFrame::create(
+    _["num"] = num,
+    _["den"] = den,
+    _["approximation"] = approx,
+    _["x"] = x,
+    _["error"] = err,
+    _["depth"] = depth,
+    _["path"] = path,
+    _["lower_uncertainty"] = final_lower,
+    _["upper_uncertainty"] = final_upper,
+    _["valid_min"] = valid_min,
+    _["valid_max"] = valid_max
+  );
+}

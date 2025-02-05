@@ -41,3 +41,7 @@ first_coprime <- function(x, lower_uncertainty, upper_uncertainty) {
     .Call(`_coprimer_first_coprime`, x, lower_uncertainty, upper_uncertainty)
 }
 
+nearby_coprime <- function(x, lower_uncertainty, upper_uncertainty) {
+    .Call(`_coprimer_nearby_coprime`, x, lower_uncertainty, upper_uncertainty)
+}
+
