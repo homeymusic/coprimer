@@ -51,3 +51,7 @@ rsconnect/
 # Ignore compiled object files
 src/*.o
 src/*.so
+
+# Ignore macOS .DS_Store files
+.DS_Store
+tests/testthat/_snaps/.DS_Store
