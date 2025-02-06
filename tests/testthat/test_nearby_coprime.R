@@ -38,6 +38,13 @@ test_that("nearby_coprime behaves as expected", {
   expect_equal(nearby_result$valid_min, x-lower_uncertainty)
   expect_equal(nearby_result$valid_max, x+upper_uncertainty)
 
+  lower_result  <- first_coprime(x, lower_uncertainty, upper_uncertainty)
+  expect_equal(lower_result$valid_min, x - lower_uncertainty)
+  expect_equal(lower_result$valid_max, x + upper_uncertainty)
+  expect_equal(lower_result$num, 0)
+  expect_equal(lower_result$den, 1)
+  expect_equal(lower_result$approximation, 0)
+
 })
 
 test_that("nearby_coprime() works with scalar inputs", {
