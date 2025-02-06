@@ -213,6 +213,42 @@ DataFrame first_coprime(const NumericVector x,
   );
 }
 
+//' Find the nearest coprime fraction within uncertainty bounds
+//'
+//' This function finds the best rational approximation (coprime fraction) to a given value `x`
+//' while considering a specified lower and upper uncertainty range. It computes two coprime
+//' fractions: one using the lower uncertainty and one using the upper uncertainty, and returns
+//' the one closest to `x`.
+//'
+//' @param x A numeric vector of values for which to find the nearest coprime fraction.
+//' @param lower_uncertainty A numeric vector or scalar specifying the lower uncertainty range.
+//'   If scalar, it is applied to all `x` values.
+//' @param upper_uncertainty A numeric vector or scalar specifying the upper uncertainty range.
+//'   If scalar, it is applied to all `x` values.
+//'
+//' @return A data frame containing:
+//'   - `num`: The numerator of the coprime fraction.
+//'   - `den`: The denominator of the coprime fraction.
+//'   - `approximation`: The computed fraction closest to `x`.
+//'   - `x`: The original input value(s).
+//'   - `error`: The difference between `approximation` and `x`.
+//'   - `depth`: The depth of the Stern-Brocot tree used to find the fraction.
+//'   - `path`: The Stern-Brocot path to the selected fraction.
+//'   - `lower_uncertainty`: The effective lower uncertainty used.
+//'   - `upper_uncertainty`: The effective upper uncertainty used.
+//'   - `valid_min`: The minimum valid range (`x - lower_uncertainty`).
+//'   - `valid_max`: The maximum valid range (`x + upper_uncertainty`).
+//'
+//' @details
+//' The function computes two rational approximations: one using `x - lower_uncertainty` and one
+//' using `x + upper_uncertainty`. The fraction whose approximation is closest to `x` is selected.
+//' If `lower_uncertainty` or `upper_uncertainty` is a scalar, it is expanded to match the length
+//' of `x`. If their lengths are inconsistent, an error is thrown.
+//'
+//' @examples
+//' nearby_coprime(0.2, 0.01, 0.1)
+//' nearby_coprime(c(0.2, 0.3), 0.01, c(0.05, 0.1))
+//'
 // [[Rcpp::export]]
 DataFrame nearby_coprime(const NumericVector x,
                          const NumericVector lower_uncertainty,
