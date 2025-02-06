@@ -215,13 +215,36 @@ DataFrame first_coprime(const NumericVector x,
 
 // [[Rcpp::export]]
 DataFrame nearby_coprime(const NumericVector x,
-                          const NumericVector lower_uncertainty,
-                          const NumericVector upper_uncertainty) {
+                         const NumericVector lower_uncertainty,
+                         const NumericVector upper_uncertainty) {
+
   int n = x.size();
 
+  // Ensure lower_uncertainty and upper_uncertainty are either of length 1 or match x
+  if (lower_uncertainty.size() != 1 && lower_uncertainty.size() != n) {
+    stop("lower_uncertainty must either be of length 1 or match the length of x");
+  }
+  if (upper_uncertainty.size() != 1 && upper_uncertainty.size() != n) {
+    stop("upper_uncertainty must either be of length 1 or match the length of x");
+  }
+
+  // Expand scalar uncertainties if necessary
+  NumericVector final_lower(n), final_upper(n);
+  for (int i = 0; i < n; i++) {
+    final_lower[i] = (lower_uncertainty.size() == 1) ? lower_uncertainty[0] : lower_uncertainty[i];
+    final_upper[i] = (upper_uncertainty.size() == 1) ? upper_uncertainty[0] : upper_uncertainty[i];
+  }
+
+  // Compute min and max valid ranges
+  NumericVector valid_min(n), valid_max(n);
+  for (int i = 0; i < n; i++) {
+    valid_min[i] = x[i] - final_lower[i];
+    valid_max[i] = x[i] + final_upper[i];
+  }
+
   // Call first_coprime() with one uncertainty forced to zero
-  DataFrame lower_cp = first_coprime(x, lower_uncertainty, NumericVector::create(0.0));
-  DataFrame upper_cp = first_coprime(x, NumericVector::create(0.0), upper_uncertainty);
+  DataFrame lower_cp = first_coprime(x, final_lower, NumericVector(n, 0.0));
+  DataFrame upper_cp = first_coprime(x, NumericVector(n, 0.0), final_upper);
 
   // Allocate output vectors
   IntegerVector num(n), den(n), depth(n);
@@ -232,6 +255,7 @@ DataFrame nearby_coprime(const NumericVector x,
   for (int i = 0; i < n; i++) {
     double d_lower = std::abs(as<NumericVector>(lower_cp["approximation"])[i] - x[i]);
     double d_upper = std::abs(as<NumericVector>(upper_cp["approximation"])[i] - x[i]);
+
     if (d_lower <= d_upper) {
       num[i]    = as<IntegerVector>(lower_cp["num"])[i];
       den[i]    = as<IntegerVector>(lower_cp["den"])[i];
@@ -248,14 +272,6 @@ DataFrame nearby_coprime(const NumericVector x,
       path[i]   = as<CharacterVector>(upper_cp["path"])[i];
     }
   }
-
-  // Ensure the uncertainties are of length n
-  NumericVector final_lower = (lower_uncertainty.size() == 1 ? NumericVector(n, lower_uncertainty[0])
-                                 : lower_uncertainty);
-  NumericVector final_upper = (upper_uncertainty.size() == 1 ? NumericVector(n, upper_uncertainty[0])
-                                 : upper_uncertainty);
-  NumericVector valid_min = x - final_lower;
-  NumericVector valid_max = x + final_upper;
 
   return DataFrame::create(
     _["num"] = num,

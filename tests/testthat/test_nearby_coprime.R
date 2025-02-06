@@ -38,5 +38,128 @@ test_that("nearby_coprime behaves as expected", {
   expect_equal(nearby_result$valid_min, x-lower_uncertainty)
   expect_equal(nearby_result$valid_max, x+upper_uncertainty)
 
+})
 
+test_that("nearby_coprime() works with scalar inputs", {
+  x <- 0.25
+  lower_uncertainty <- 0.02
+  upper_uncertainty <- 0.1
+  nearby_result <- nearby_coprime(x, lower_uncertainty, upper_uncertainty)
+
+  expect_equal(nearby_result$num, 1)
+  expect_equal(nearby_result$den, 4)
+  expect_equal(nearby_result$approximation, 1/4)
+})
+
+test_that("nearby_coprime() captures input values correctly", {
+  x <- 0.25
+  lower_uncertainty <- 0.02
+  upper_uncertainty <- 0.1
+  nearby_result <- nearby_coprime(x, lower_uncertainty, upper_uncertainty)
+
+  expect_equal(nearby_result$x, x)
+  expect_equal(nearby_result$lower_uncertainty, lower_uncertainty)
+  expect_equal(nearby_result$upper_uncertainty, upper_uncertainty)
+})
+
+test_that("nearby_coprime() computes error and valid range correctly", {
+  x <- 0.25
+  lower_uncertainty <- 0.02
+  upper_uncertainty <- 0.1
+  nearby_result <- nearby_coprime(x, lower_uncertainty, upper_uncertainty)
+
+  expect_equal(nearby_result$error, 0, tolerance = 0.001)
+  expect_equal(nearby_result$valid_min, x - lower_uncertainty)
+  expect_equal(nearby_result$valid_max, x + upper_uncertainty)
+})
+
+test_that("nearby_coprime() handles vector x", {
+  x <- c(0.1, 0.33, 0.75)
+  lower_uncertainty <- 0.01
+  upper_uncertainty <- 0.1
+  nearby_results <- nearby_coprime(x, lower_uncertainty, upper_uncertainty)
+
+  expect_equal(nearby_results$num, c(1, 1, 3))
+  expect_equal(nearby_results$den, c(10, 3, 4))
+  expect_equal(nearby_results$approximation, c(1/10, 1/3, 3/4))
+})
+
+test_that("nearby_coprime() errors when lower_uncertainty is a vector but x and upper_uncertainty are scalars", {
+  x <- 0.2
+  lower_uncertainty <- c(0.01, 0.05, 0.1)  # Vector
+  upper_uncertainty <- 0.1  # Scalar
+
+  expect_error(
+    nearby_coprime(x, lower_uncertainty, upper_uncertainty),
+    "lower_uncertainty must either be of length 1 or match the length of x"
+  )
+})
+
+test_that("nearby_coprime() errors when upper_uncertainty is a vector but x and lower_uncertainty are scalars", {
+  x <- 0.2
+  lower_uncertainty <- 0.01  # Scalar
+  upper_uncertainty <- c(0.05, 0.1, 0.2)  # Vector
+
+  expect_error(
+    nearby_coprime(x, lower_uncertainty, upper_uncertainty),
+    "upper_uncertainty must either be of length 1 or match the length of x"
+  )
+})
+test_that("nearby_coprime() correctly applies scalar lower_uncertainty and upper_uncertainty to vector x", {
+  x <- c(0.2, 0.3, 0.4)  # Vector
+  lower_uncertainty <- 0.01  # Scalar
+  upper_uncertainty <- 0.1  # Scalar
+
+  nearby_result <- nearby_coprime(x, lower_uncertainty, upper_uncertainty)
+
+  expect_equal(nearby_result$lower_uncertainty, rep(lower_uncertainty, length(x)))
+  expect_equal(nearby_result$upper_uncertainty, rep(upper_uncertainty, length(x)))
+  expect_equal(nearby_result$valid_min, x - lower_uncertainty)
+  expect_equal(nearby_result$valid_max, x + upper_uncertainty)
+})
+
+test_that("nearby_coprime() correctly applies vector lower_uncertainty and upper_uncertainty of same length as x", {
+  x <- c(0.2, 0.3, 0.4)  # Vector
+  lower_uncertainty <- c(0.01, 0.02, 0.03)  # Vector of same length
+  upper_uncertainty <- c(0.1, 0.15, 0.2)  # Vector of same length
+
+  nearby_result <- nearby_coprime(x, lower_uncertainty, upper_uncertainty)
+
+  expect_equal(nearby_result$lower_uncertainty, lower_uncertainty)
+  expect_equal(nearby_result$upper_uncertainty, upper_uncertainty)
+  expect_equal(nearby_result$valid_min, x - lower_uncertainty)
+  expect_equal(nearby_result$valid_max, x + upper_uncertainty)
+})
+
+test_that("nearby_coprime() errors when lower_uncertainty is a vector of incorrect length", {
+  x <- c(0.2, 0.3)  # Vector of length 2
+  lower_uncertainty <- c(0.01, 0.02, 0.03)  # Vector of length 3 (incorrect)
+  upper_uncertainty <- 0.1  # Scalar
+
+  expect_error(
+    nearby_coprime(x, lower_uncertainty, upper_uncertainty),
+    "lower_uncertainty must either be of length 1 or match the length of x"
+  )
+})
+
+test_that("nearby_coprime() errors when upper_uncertainty is a vector of incorrect length", {
+  x <- c(0.2, 0.3)  # Vector of length 2
+  lower_uncertainty <- 0.01  # Scalar
+  upper_uncertainty <- c(0.05, 0.1, 0.15)  # Vector of length 3 (incorrect)
+
+  expect_error(
+    nearby_coprime(x, lower_uncertainty, upper_uncertainty),
+    "upper_uncertainty must either be of length 1 or match the length of x"
+  )
+})
+
+test_that("nearby_coprime() errors when lower_uncertainty and upper_uncertainty have different vector lengths", {
+  x <- c(0.2, 0.3, 0.4)  # Vector of length 3
+  lower_uncertainty <- c(0.01, 0.02)  # Vector of length 2 (incorrect)
+  upper_uncertainty <- c(0.1, 0.15, 0.2)  # Vector of length 3
+
+  expect_error(
+    nearby_coprime(x, lower_uncertainty, upper_uncertainty),
+    "lower_uncertainty must either be of length 1 or match the length of x"
+  )
 })
