@@ -2,44 +2,22 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' stern_brocot_tree
-#'
-#' Generate the Stern-Brocot tree up to a given depth using `std::list`.
-#'
-#' @param x The depth of the tree to generate.
-#'
-#' @return A data frame containing:
-#'   - `num`: Numerator of the fraction.
-#'   - `den`: Denominator of the fraction.
-#'   - `depth`: The depth level in the Stern-Brocot tree.
-#'
+NULL
+
+#' first_coprime
+NULL
+
+#' nearby_coprime
+NULL
+
 stern_brocot_tree <- function(x) {
     .Call(`_coprimer_stern_brocot_tree`, x)
 }
 
-#' first_coprime
-#'
-#' Approximate a real number as a coprime rational fraction using the Stern-Brocot tree.
-#'
-#' @param x A numeric vector of values to approximate as fractions.
-#' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
-#' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
-#' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
-#'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
-#'
 first_coprime <- function(x, lower_uncertainty, upper_uncertainty) {
     .Call(`_coprimer_first_coprime`, x, lower_uncertainty, upper_uncertainty)
 }
 
-#' nearby_coprime
-#'
-#' Find the nearest coprime fraction within uncertainty bounds.
-#'
-#' @param x A numeric vector of values.
-#' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
-#' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
-#' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
-#'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
-#'
 nearby_coprime <- function(x, lower_uncertainty, upper_uncertainty) {
     .Call(`_coprimer_nearby_coprime`, x, lower_uncertainty, upper_uncertainty)
 }

@@ -74,39 +74,39 @@ void insert_mediants(list<int>& nums,
 }
 
 //' stern_brocot_tree
-//'
-//' Generate the Stern-Brocot tree up to a given depth using `std::list`.
-//'
-//' @param x The depth of the tree to generate.
-//'
-//' @return A data frame containing:
-//'   - `num`: Numerator of the fraction.
-//'   - `den`: Denominator of the fraction.
-//'   - `depth`: The depth level in the Stern-Brocot tree.
-//'
-// [[Rcpp::export]]
-DataFrame stern_brocot_tree(const int x) {
-  if (x < 0) stop("Depth must be non-negative.");
+ //'
+ //' Generate the Stern-Brocot tree up to a given depth using `std::list`.
+ //'
+ //' @param x The depth of the tree to generate.
+ //'
+ //' @return A data frame containing:
+ //'   - `num`: Numerator of the fraction.
+ //'   - `den`: Denominator of the fraction.
+ //'   - `depth`: The depth level in the Stern-Brocot tree.
+ //'
+ // [[Rcpp::export]]
+ DataFrame stern_brocot_tree(const int x) {
+   if (x < 0) stop("Depth must be non-negative.");
 
-  // Initialize the list with pre-level
-  list<int> nums             = {-1, 0, 1};
-  list<int> dens             = { 0, 1, 0};
-  list<string> labels        = {"-1/0","0/1","1/0"};
-  list<int> levels           = {-1,-0,-1};
-  list<string> left_parents  = {"","-1/0",""};
-  list<string> right_parents = {"","1/0",""};
+   // Initialize the list with pre-level
+   list<int> nums             = {-1, 0, 1};
+   list<int> dens             = { 0, 1, 0};
+   list<string> labels        = {"-1/0","0/1","1/0"};
+   list<int> levels           = {-1,-0,-1};
+   list<string> left_parents  = {"","-1/0",""};
+   list<string> right_parents = {"","1/0",""};
 
-  insert_mediants(nums, dens, labels, levels, left_parents, right_parents, 1, x);
+   insert_mediants(nums, dens, labels, levels, left_parents, right_parents, 1, x);
 
-  return DataFrame::create(
-    _["num"] = nums,
-    _["den"] = dens,
-    _["label"] = labels,
-    _["depth"] = levels,
-    _["left_parent"] = left_parents,
-    _["right_parent"] = right_parents
-  );
-}
+   return DataFrame::create(
+     _["num"] = nums,
+     _["den"] = dens,
+     _["label"] = labels,
+     _["depth"] = levels,
+     _["left_parent"] = left_parents,
+     _["right_parent"] = right_parents
+   );
+ }
 
 // -------------------------------------------------------------------------
 // Helper: Validate and expand uncertainties and compute valid ranges
@@ -169,8 +169,9 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   int right_num = 1, right_den = 0;
   double approximation = 0.0;
 
-  while ((round_to_precision(approximation) < round_to_precision(valid_min)) ||
-         (round_to_precision(approximation) > round_to_precision(valid_max))) {
+  const double epsilon = 1e-15;  // Adjust based on required precision
+
+  while ((approximation + epsilon < valid_min) || (approximation - epsilon > valid_max)) {
     if (approximation < valid_min) {
       left_num = mediant_num;
       left_den = mediant_den;
@@ -231,103 +232,103 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
 // -------------------------------------------------------------------------
 
 //' first_coprime
-//'
-//' Approximate a real number as a coprime rational fraction using the Stern-Brocot tree.
-//'
-//' @param x A numeric vector of values to approximate as fractions.
-//' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
-//' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
-//' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
-//'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
-//'
-// [[Rcpp::export]]
-DataFrame first_coprime(const NumericVector x,
-                        const NumericVector lower_uncertainty,
-                        const NumericVector upper_uncertainty) {
-  int n = x.size();
-  List uncert = prepare_uncertainties(x, lower_uncertainty, upper_uncertainty);
-  NumericVector final_lower = uncert["lower"];
-  NumericVector final_upper = uncert["upper"];
-  NumericVector valid_min   = uncert["valid_min"];
-  NumericVector valid_max   = uncert["valid_max"];
+ //'
+ //' Approximate a real number as a coprime rational fraction using the Stern-Brocot tree.
+ //'
+ //' @param x A numeric vector of values to approximate as fractions.
+ //' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
+ //' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
+ //' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
+ //'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
+ //'
+ // [[Rcpp::export]]
+ DataFrame first_coprime(const NumericVector x,
+                         const NumericVector lower_uncertainty,
+                         const NumericVector upper_uncertainty) {
+   int n = x.size();
+   List uncert = prepare_uncertainties(x, lower_uncertainty, upper_uncertainty);
+   NumericVector final_lower = uncert["lower"];
+   NumericVector final_upper = uncert["upper"];
+   NumericVector valid_min   = uncert["valid_min"];
+   NumericVector valid_max   = uncert["valid_max"];
 
-  // Pre-allocate result vectors.
-  IntegerVector nums(n), dens(n), depths(n);
-  NumericVector approximations(n), errors(n), thomae(n);
-  CharacterVector paths(n);
+   // Pre-allocate result vectors.
+   IntegerVector nums(n), dens(n), depths(n);
+   NumericVector approximations(n), errors(n), thomae(n);
+   CharacterVector paths(n);
 
-  for (int i = 0; i < n; i++) {
-    SternBrocotResult res = compute_fraction(x[i], valid_min[i], valid_max[i]);
-    nums[i]           = res.num;
-    dens[i]           = res.den;
-    approximations[i] = res.approximation;
-    errors[i]         = res.error;
-    depths[i]         = res.depth;
-    paths[i]          = res.path;
-    thomae[i]         = res.thomae;
-  }
+   for (int i = 0; i < n; i++) {
+     SternBrocotResult res = compute_fraction(x[i], valid_min[i], valid_max[i]);
+     nums[i]           = res.num;
+     dens[i]           = res.den;
+     approximations[i] = res.approximation;
+     errors[i]         = res.error;
+     depths[i]         = res.depth;
+     paths[i]          = res.path;
+     thomae[i]         = res.thomae;
+   }
 
-  return create_result_dataframe(nums, dens, approximations, x, errors,
-                                 thomae, depths, paths,
-                                 final_lower, final_upper, valid_min, valid_max);
-}
+   return create_result_dataframe(nums, dens, approximations, x, errors,
+                                  thomae, depths, paths,
+                                  final_lower, final_upper, valid_min, valid_max);
+ }
 
 // -------------------------------------------------------------------------
 // Exported function: nearby_coprime
 // -------------------------------------------------------------------------
 
 //' nearby_coprime
-//'
-//' Find the nearest coprime fraction within uncertainty bounds.
-//'
-//' @param x A numeric vector of values.
-//' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
-//' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
-//' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
-//'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
-//'
-// [[Rcpp::export]]
-DataFrame nearby_coprime(const NumericVector x,
-                         const NumericVector lower_uncertainty,
-                         const NumericVector upper_uncertainty) {
-  int n = x.size();
-  List uncert = prepare_uncertainties(x, lower_uncertainty, upper_uncertainty);
-  NumericVector final_lower = uncert["lower"];
-  NumericVector final_upper = uncert["upper"];
+ //'
+ //' Find the nearest coprime fraction within uncertainty bounds.
+ //'
+ //' @param x A numeric vector of values.
+ //' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
+ //' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
+ //' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
+ //'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
+ //'
+ // [[Rcpp::export]]
+ DataFrame nearby_coprime(const NumericVector x,
+                          const NumericVector lower_uncertainty,
+                          const NumericVector upper_uncertainty) {
+   int n = x.size();
+   List uncert = prepare_uncertainties(x, lower_uncertainty, upper_uncertainty);
+   NumericVector final_lower = uncert["lower"];
+   NumericVector final_upper = uncert["upper"];
 
-  // For reporting, compute overall valid ranges.
-  NumericVector valid_min(n), valid_max(n);
-  for (int i = 0; i < n; i++) {
-    valid_min[i] = x[i] - final_lower[i];
-    valid_max[i] = x[i] + final_upper[i];
-  }
+   // For reporting, compute overall valid ranges.
+   NumericVector valid_min(n), valid_max(n);
+   for (int i = 0; i < n; i++) {
+     valid_min[i] = x[i] - final_lower[i];
+     valid_max[i] = x[i] + final_upper[i];
+   }
 
-  // Pre-allocate result vectors.
-  IntegerVector nums(n), dens(n), depths(n);
-  NumericVector approximations(n), errors(n), thomae(n);
-  CharacterVector paths(n);
+   // Pre-allocate result vectors.
+   IntegerVector nums(n), dens(n), depths(n);
+   NumericVector approximations(n), errors(n), thomae(n);
+   CharacterVector paths(n);
 
-  for (int i = 0; i < n; i++) {
-    // Lower candidate: force the fraction to be <= x.
-    SternBrocotResult lowerRes = compute_fraction(x[i], x[i] - final_lower[i], x[i]);
-    // Upper candidate: force the fraction to be >= x.
-    SternBrocotResult upperRes = compute_fraction(x[i], x[i], x[i] + final_upper[i]);
+   for (int i = 0; i < n; i++) {
+     // Lower candidate: force the fraction to be <= x.
+     SternBrocotResult lowerRes = compute_fraction(x[i], x[i] - final_lower[i], x[i]);
+     // Upper candidate: force the fraction to be >= x.
+     SternBrocotResult upperRes = compute_fraction(x[i], x[i], x[i] + final_upper[i]);
 
-    double diffLower = std::abs(lowerRes.approximation - x[i]);
-    double diffUpper = std::abs(upperRes.approximation - x[i]);
+     double diffLower = std::abs(lowerRes.approximation - x[i]);
+     double diffUpper = std::abs(upperRes.approximation - x[i]);
 
-    SternBrocotResult chosen = (diffLower <= diffUpper) ? lowerRes : upperRes;
+     SternBrocotResult chosen = (diffLower <= diffUpper) ? lowerRes : upperRes;
 
-    nums[i]           = chosen.num;
-    dens[i]           = chosen.den;
-    approximations[i] = chosen.approximation;
-    errors[i]         = chosen.error;
-    depths[i]         = chosen.depth;
-    paths[i]          = chosen.path;
-    thomae[i]         = chosen.thomae;
-  }
+     nums[i]           = chosen.num;
+     dens[i]           = chosen.den;
+     approximations[i] = chosen.approximation;
+     errors[i]         = chosen.error;
+     depths[i]         = chosen.depth;
+     paths[i]          = chosen.path;
+     thomae[i]         = chosen.thomae;
+   }
 
-  return create_result_dataframe(nums, dens, approximations, x, errors,
-                                 thomae, depths, paths,
-                                 final_lower, final_upper, valid_min, valid_max);
-}
+   return create_result_dataframe(nums, dens, approximations, x, errors,
+                                  thomae, depths, paths,
+                                  final_lower, final_upper, valid_min, valid_max);
+ }

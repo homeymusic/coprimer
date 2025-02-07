@@ -229,3 +229,19 @@ test_that('the number of inputs and outputs match', {
   expect_equal(length(x_real), nrow(x))
   expect_equal(x$lower_uncertainty, rev(x$upper_uncertainty))
 })
+
+test_that('the number of inputs and outputs match', {
+  num_samples  = 101
+  num_bins     = 101
+  slit_width   = 3.8
+
+  dx           =  slit_width / num_samples
+  min_x        = -slit_width/2 + dx
+  max_x        =  slit_width/2 - dx
+  x_real       = seq(from=min_x, to=max_x, by=dx)
+  sigma_x_lt   = x_real - min_x
+  sigma_x_gt   = max_x - x_real
+  x = coprimer::nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
+  expect_equal(length(x_real), nrow(x))
+  expect_equal(x$lower_uncertainty, rev(x$upper_uncertainty))
+})
