@@ -284,7 +284,7 @@ DataFrame nearby_coprime(const NumericVector x,
 
   // Allocate output vectors
   IntegerVector num(n), den(n), depth(n);
-  NumericVector approx(n), err(n);
+  NumericVector approx(n), err(n), redun(n);
   CharacterVector path(n);
 
   // For each element, choose the fraction whose approximation is closest to x
@@ -307,6 +307,7 @@ DataFrame nearby_coprime(const NumericVector x,
       depth[i]  = as<IntegerVector>(upper_cp["depth"])[i];
       path[i]   = as<CharacterVector>(upper_cp["path"])[i];
     }
+    redun[i] = 1.0 / (abs(num[i]) + abs(den[i]));
   }
 
   return DataFrame::create(
@@ -315,6 +316,7 @@ DataFrame nearby_coprime(const NumericVector x,
     _["approximation"] = approx,
     _["x"] = x,
     _["error"] = err,
+    _["redundancy"] = redun,
     _["depth"] = depth,
     _["path"] = path,
     _["lower_uncertainty"] = final_lower,
