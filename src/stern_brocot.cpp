@@ -169,7 +169,8 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   int right_num = 1, right_den = 0;
   double approximation = 0.0;
 
-  while ((approximation < round_to_precision(valid_min)) || (approximation > round_to_precision(valid_max))) {
+  while ((round_to_precision(approximation) < round_to_precision(valid_min)) ||
+         (round_to_precision(approximation) > round_to_precision(valid_max))) {
     if (approximation < valid_min) {
       left_num = mediant_num;
       left_den = mediant_den;
