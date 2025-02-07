@@ -199,16 +199,17 @@ test_that("nearby_coprime() errors when lower_uncertainty and upper_uncertainty 
 })
 
 test_that('the number of inputs and outputs match', {
-  num_samples  = 10
-  num_bins     = 11
-  slit_width   = 1
+  num_samples  = 8
+  num_bins     = 8
+  slit_width   = 0.7
 
-  dx           = 1/num_samples
-  min_x        = -slit_width/2
-  max_x        =  slit_width/2
+  dx           =  slit_width / num_samples
+  min_x        = -slit_width/2 + dx
+  max_x        =  slit_width/2 - dx
   x_real       = seq(from=min_x, to=max_x, by=dx)
   sigma_x_lt   = x_real - min_x
   sigma_x_gt   = max_x - x_real
   x = coprimer::nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
   expect_equal(length(x_real), nrow(x))
+  expect_equal(x$lower_uncertainty, rev(x$upper_uncertainty))
 })

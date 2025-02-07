@@ -1,6 +1,9 @@
 #include <Rcpp.h>
 #include <queue>
 #include <tuple>
+#include <cmath>
+#include <vector>
+#include <string>
 
 using namespace Rcpp;
 using namespace std;
@@ -105,13 +108,6 @@ DataFrame stern_brocot_tree(const int x) {
   );
 }
 
-#include <Rcpp.h>
-#include <cmath>
-#include <vector>
-#include <string>
-
-using namespace Rcpp;
-
 // -------------------------------------------------------------------------
 // Helper: Validate and expand uncertainties and compute valid ranges
 // -------------------------------------------------------------------------
@@ -161,6 +157,11 @@ struct SternBrocotResult {
   std::string path;
 };
 
+inline double round_to_precision(double value, int precision = 15) {
+  double scale = std::pow(10.0, precision);
+  return std::round(value * scale) / scale;
+}
+
 SternBrocotResult compute_fraction(double x, double valid_min, double valid_max) {
   std::vector<char> path;
   int left_num = -1, left_den = 0;
@@ -168,7 +169,7 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   int right_num = 1, right_den = 0;
   double approximation = 0.0;
 
-  while ((approximation < valid_min) || (approximation > valid_max)) {
+  while ((approximation < round_to_precision(valid_min)) || (approximation > round_to_precision(valid_max))) {
     if (approximation < valid_min) {
       left_num = mediant_num;
       left_den = mediant_den;
@@ -188,8 +189,7 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   result.num = mediant_num;
   result.den = mediant_den;
   result.approximation = approximation;
-  const double scale = std::pow(10.0, 15);
-  result.error = std::round((approximation - x) * scale) / scale;
+  result.error = round_to_precision(approximation - x);
   result.depth = path.size();
   result.path = std::string(path.begin(), path.end());
   result.thomae = 1.0 / mediant_den;
