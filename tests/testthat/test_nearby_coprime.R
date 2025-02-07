@@ -187,3 +187,29 @@ test_that("nearby_coprime() errors when lower_uncertainty and upper_uncertainty 
     "lower_uncertainty must either be of length 1 or match the length of x"
   )
 })
+
+test_that("nearby_coprime() errors when lower_uncertainty and upper_uncertainty have different vector lengths", {
+  x <- c(0.2, 0.3, 0.4)  # Vector of length 3
+  lower_uncertainty <- c(0.01, 0.02)  # Vector of length 2 (incorrect)
+  upper_uncertainty <- c(0.1, 0.15, 0.2)  # Vector of length 3
+
+  expect_error(
+    nearby_coprime(x, lower_uncertainty, upper_uncertainty),
+    "lower_uncertainty must either be of length 1 or match the length of x"
+  )
+})
+
+test_that('the number of inputs and outputs match', {
+  num_samples  = 10
+  num_bins     = 11
+  slit_width   = 1
+
+  dx           = 1/num_samples
+  min_x        = -slit_width/2
+  max_x        =  slit_width/2
+  x_real       = seq(from=min_x, to=max_x, by=dx)
+  sigma_x_lt   = x_real - min_x
+  sigma_x_gt   = max_x - x_real
+  x = coprimer::nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
+  expect_equal(length(x_real), nrow(x))
+})
