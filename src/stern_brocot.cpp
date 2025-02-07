@@ -156,6 +156,7 @@ struct SternBrocotResult {
   int den;
   double approximation;
   double error;
+  double thomae;
   int depth;
   std::string path;
 };
@@ -191,7 +192,7 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   result.error = std::round((approximation - x) * scale) / scale;
   result.depth = path.size();
   result.path = std::string(path.begin(), path.end());
-
+  result.thomae = 1.0 / mediant_den;
   return result;
 }
 
@@ -203,7 +204,7 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
                                   const NumericVector &approximations,
                                   const NumericVector &x,
                                   const NumericVector &errors,
-                                  const NumericVector &redundancy,
+                                  const NumericVector &thomae,
                                   const IntegerVector &depths,
                                   const CharacterVector &paths,
                                   const NumericVector &final_lower,
@@ -215,7 +216,7 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
                            _["approximation"] = approximations,
                            _["x"] = x,
                            _["error"] = errors,
-                           _["redundancy"] = redundancy,
+                           _["thomae"] = thomae,
                            _["depth"] = depths,
                            _["path"] = paths,
                            _["lower_uncertainty"] = final_lower,
@@ -235,7 +236,7 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
 //' @param x A numeric vector of values to approximate as fractions.
 //' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
 //' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
-//' @return A DataFrame with columns: num, den, approximation, x, error, redundancy, depth, path,
+//' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
 //'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
 //'
 // [[Rcpp::export]]
@@ -251,22 +252,22 @@ DataFrame first_coprime(const NumericVector x,
 
   // Pre-allocate result vectors.
   IntegerVector nums(n), dens(n), depths(n);
-  NumericVector approximations(n), errors(n), redundancy(n);
+  NumericVector approximations(n), errors(n), thomae(n);
   CharacterVector paths(n);
 
   for (int i = 0; i < n; i++) {
     SternBrocotResult res = compute_fraction(x[i], valid_min[i], valid_max[i]);
-    nums[i]          = res.num;
-    dens[i]          = res.den;
+    nums[i]           = res.num;
+    dens[i]           = res.den;
     approximations[i] = res.approximation;
     errors[i]         = res.error;
     depths[i]         = res.depth;
     paths[i]          = res.path;
-    redundancy[i]     = 1.0 / (std::abs(res.num) + std::abs(res.den));
+    thomae[i]         = res.thomae;
   }
 
   return create_result_dataframe(nums, dens, approximations, x, errors,
-                                 redundancy, depths, paths,
+                                 thomae, depths, paths,
                                  final_lower, final_upper, valid_min, valid_max);
 }
 
@@ -281,7 +282,7 @@ DataFrame first_coprime(const NumericVector x,
 //' @param x A numeric vector of values.
 //' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
 //' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
-//' @return A DataFrame with columns: num, den, approximation, x, error, redundancy, depth, path,
+//' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
 //'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
 //'
 // [[Rcpp::export]]
@@ -302,7 +303,7 @@ DataFrame nearby_coprime(const NumericVector x,
 
   // Pre-allocate result vectors.
   IntegerVector nums(n), dens(n), depths(n);
-  NumericVector approximations(n), errors(n), redundancy(n);
+  NumericVector approximations(n), errors(n), thomae(n);
   CharacterVector paths(n);
 
   for (int i = 0; i < n; i++) {
@@ -316,16 +317,16 @@ DataFrame nearby_coprime(const NumericVector x,
 
     SternBrocotResult chosen = (diffLower <= diffUpper) ? lowerRes : upperRes;
 
-    nums[i]          = chosen.num;
-    dens[i]          = chosen.den;
+    nums[i]           = chosen.num;
+    dens[i]           = chosen.den;
     approximations[i] = chosen.approximation;
     errors[i]         = chosen.error;
     depths[i]         = chosen.depth;
     paths[i]          = chosen.path;
-    redundancy[i]     = 1.0 / (std::abs(chosen.num) + std::abs(chosen.den));
+    thomae[i]         = chosen.thomae;
   }
 
   return create_result_dataframe(nums, dens, approximations, x, errors,
-                                 redundancy, depths, paths,
+                                 thomae, depths, paths,
                                  final_lower, final_upper, valid_min, valid_max);
 }

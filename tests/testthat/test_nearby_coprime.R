@@ -32,8 +32,8 @@ test_that("nearby_coprime behaves as expected", {
   expect_equal(nearby_result$x, -0.1)
   expect_equal(nearby_result$error, -0.04285714, tolerance = 0.001)
   expect_equal(nearby_result$depth, 7)
-  expect_equal(nearby_result$redundancy,
-               1/(abs(nearby_result$num) + abs(nearby_result$den)))
+  expect_equal(nearby_result$thomae,
+               1/nearby_result$den)
   expect_equal(nearby_result$path, "LRRRRRR")
   expect_equal(nearby_result$lower_uncertainty, lower_uncertainty)
   expect_equal(nearby_result$upper_uncertainty, upper_uncertainty)
@@ -58,8 +58,8 @@ test_that("nearby_coprime() works with scalar inputs", {
   expect_equal(nearby_result$num, 1)
   expect_equal(nearby_result$den, 4)
   expect_equal(nearby_result$approximation, 1/4)
-  expect_equal(nearby_result$redundancy,
-               1/(abs(nearby_result$num) + abs(nearby_result$den)))
+  expect_equal(nearby_result$thomae,
+               1/nearby_result$den)
 
 })
 
@@ -72,8 +72,8 @@ test_that("nearby_coprime() captures input values correctly", {
   expect_equal(nearby_result$x, x)
   expect_equal(nearby_result$lower_uncertainty, lower_uncertainty)
   expect_equal(nearby_result$upper_uncertainty, upper_uncertainty)
-  expect_equal(nearby_result$redundancy,
-               1/(abs(nearby_result$num) + abs(nearby_result$den)))
+  expect_equal(nearby_result$thomae,
+               1/nearby_result$den)
 
 })
 
@@ -86,8 +86,8 @@ test_that("nearby_coprime() computes error and valid range correctly", {
   expect_equal(nearby_result$error, 0, tolerance = 0.001)
   expect_equal(nearby_result$valid_min, x - lower_uncertainty)
   expect_equal(nearby_result$valid_max, x + upper_uncertainty)
-  expect_equal(nearby_result$redundancy,
-               1/(abs(nearby_result$num) + abs(nearby_result$den)))
+  expect_equal(nearby_result$thomae,
+               1/nearby_result$den)
 
 })
 
@@ -100,8 +100,7 @@ test_that("nearby_coprime() handles vector x", {
   expect_equal(nearby_results$num, c(1, 1, 3))
   expect_equal(nearby_results$den, c(10, 3, 4))
   expect_equal(nearby_results$approximation, c(1/10, 1/3, 3/4))
-  expect_equal(nearby_results$redundancy,
-               1/(abs(nearby_results$num) + abs(nearby_results$den)))
+  expect_equal(nearby_results$thomae, 1/nearby_results$den)
 })
 
 test_that("nearby_coprime() errors when lower_uncertainty is a vector but x and upper_uncertainty are scalars", {
@@ -136,8 +135,8 @@ test_that("nearby_coprime() correctly applies scalar lower_uncertainty and upper
   expect_equal(nearby_result$upper_uncertainty, rep(upper_uncertainty, length(x)))
   expect_equal(nearby_result$valid_min, x - lower_uncertainty)
   expect_equal(nearby_result$valid_max, x + upper_uncertainty)
-  expect_equal(nearby_result$redundancy,
-               1/(abs(nearby_result$num) + abs(nearby_result$den)))
+  expect_equal(nearby_result$thomae,
+               1/nearby_result$den)
 })
 
 test_that("nearby_coprime() correctly applies vector lower_uncertainty and upper_uncertainty of same length as x", {
@@ -151,8 +150,8 @@ test_that("nearby_coprime() correctly applies vector lower_uncertainty and upper
   expect_equal(nearby_result$upper_uncertainty, upper_uncertainty)
   expect_equal(nearby_result$valid_min, x - lower_uncertainty)
   expect_equal(nearby_result$valid_max, x + upper_uncertainty)
-  expect_equal(nearby_result$redundancy,
-               1/(abs(nearby_result$num) + abs(nearby_result$den)))
+  expect_equal(nearby_result$thomae,
+               1/nearby_result$den)
 })
 
 test_that("nearby_coprime() errors when lower_uncertainty is a vector of incorrect length", {

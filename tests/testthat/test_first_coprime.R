@@ -189,7 +189,7 @@ test_that("x = 1 returns 1/1", {
   expect_equal(result$den, 1)
 })
 
-# Test redundancy
+# Test thomae
 test_that("the redundnacy measure returns expected values", {
   x <- c(0,1,1/2,1/3,5/3,6/7)
   x = c(x,-x)
@@ -197,7 +197,7 @@ test_that("the redundnacy measure returns expected values", {
   expected = c(expected, expected)
   uncertainty <- 0.01
   result <- first_coprime(x, uncertainty, uncertainty)
-  expect_equal(result$redundancy, expected)
+  expect_equal(result$thomae, 1/result$den)
 })
 test_that('paths are symmetrical around 0 and 1', {
   r = first_coprime(106/333, 0.000001, 0.000001)
@@ -211,3 +211,4 @@ test_that('paths are symmetrical around 0 and 1', {
   expect_equal(r$path,"LLLLRRRRRRRLLLLLLLLLLLLLL")
 
 })
+

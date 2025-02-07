@@ -23,7 +23,7 @@ stern_brocot_tree <- function(x) {
 #' @param x A numeric vector of values to approximate as fractions.
 #' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
 #' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
-#' @return A DataFrame with columns: num, den, approximation, x, error, redundancy, depth, path,
+#' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
 #'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
 #'
 first_coprime <- function(x, lower_uncertainty, upper_uncertainty) {
@@ -37,7 +37,7 @@ first_coprime <- function(x, lower_uncertainty, upper_uncertainty) {
 #' @param x A numeric vector of values.
 #' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
 #' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
-#' @return A DataFrame with columns: num, den, approximation, x, error, redundancy, depth, path,
+#' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
 #'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
 #'
 nearby_coprime <- function(x, lower_uncertainty, upper_uncertainty) {
