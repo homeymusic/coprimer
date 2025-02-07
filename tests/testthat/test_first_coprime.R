@@ -78,7 +78,7 @@ test_that("first_coprime errors on invalid uncertainties", {
   upper_uncertainty <- c(0.133, 0.4)
   expect_error(
     first_coprime(x, lower_uncertainty, upper_uncertainty),
-    regexp = "STOP: x\\[0\\] = 1\\.667.* must be greater than or equal to valid_min\\[0\\] = 3\\.667.*"
+    regexp = "x\\[0\\] = 1\\.667.* must be greater than or equal to valid_min\\[0\\] = 3\\.667.*"
   )
 })
 
@@ -165,7 +165,7 @@ test_that("error with uncertainties out of bounds", {
   upper_uncertainty <- 0.02
   expect_error(
     first_coprime(x, lower_uncertainty, upper_uncertainty),
-    regexp = "STOP: x\\[0\\] = 0\\.490.* must be greater than or equal to valid_min\\[0\\] = 0\\.530.*"
+    regexp = "x\\[0\\] = 0\\.490.* must be greater than or equal to valid_min\\[0\\] = 0\\.530.*"
   )
 })
 
