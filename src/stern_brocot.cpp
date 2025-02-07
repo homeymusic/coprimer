@@ -296,45 +296,8 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
  DataFrame nearby_coprime(const NumericVector x,
                           const NumericVector lower_uncertainty,
                           const NumericVector upper_uncertainty) {
-   int n = x.size();
-   List uncert = prepare_uncertainties(x, lower_uncertainty, upper_uncertainty);
-   NumericVector final_lower = uncert["lower"];
-   NumericVector final_upper = uncert["upper"];
 
-   // For reporting, compute overall valid ranges.
-   NumericVector valid_min(n), valid_max(n);
-   for (int i = 0; i < n; i++) {
-     valid_min[i] = x[i] - final_lower[i];
-     valid_max[i] = x[i] + final_upper[i];
-   }
+   const NumericVector smaller_uncertainty = pmin(lower_uncertainty, upper_uncertainty);
 
-   // Pre-allocate result vectors.
-   IntegerVector nums(n), dens(n), depths(n);
-   NumericVector approximations(n), errors(n), thomae(n), euclids_orchard_height(n);
-   CharacterVector paths(n);
-
-   for (int i = 0; i < n; i++) {
-     // Lower candidate: force the fraction to be <= x.
-     SternBrocotResult lowerRes = compute_fraction(x[i], x[i] - final_lower[i], x[i]);
-     // Upper candidate: force the fraction to be >= x.
-     SternBrocotResult upperRes = compute_fraction(x[i], x[i], x[i] + final_upper[i]);
-
-     double diffLower = std::abs(lowerRes.approximation - x[i]);
-     double diffUpper = std::abs(upperRes.approximation - x[i]);
-
-     SternBrocotResult chosen = (diffLower <= diffUpper) ? lowerRes : upperRes;
-
-     nums[i]           = chosen.num;
-     dens[i]           = chosen.den;
-     approximations[i] = chosen.approximation;
-     errors[i]         = chosen.error;
-     depths[i]         = chosen.depth;
-     paths[i]          = chosen.path;
-     thomae[i]         = chosen.thomae;
-     euclids_orchard_height[i] = chosen.euclids_orchard_height;
-   }
-
-   return create_result_dataframe(nums, dens, approximations, x, errors,
-                                  thomae, euclids_orchard_height, depths, paths,
-                                  final_lower, final_upper, valid_min, valid_max);
+   return first_coprime(x, smaller_uncertainty, smaller_uncertainty);
  }
