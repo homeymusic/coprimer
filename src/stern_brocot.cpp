@@ -153,6 +153,7 @@ struct SternBrocotResult {
   double approximation;
   double error;
   double thomae;
+  double euclids_orchard_height;
   int depth;
   std::string path;
 };
@@ -195,6 +196,7 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   result.depth = path.size();
   result.path = std::string(path.begin(), path.end());
   result.thomae = 1.0 / mediant_den;
+  result.euclids_orchard_height = 1.0 / (abs(mediant_num) + mediant_den);
   return result;
 }
 
@@ -207,6 +209,7 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
                                   const NumericVector &x,
                                   const NumericVector &errors,
                                   const NumericVector &thomae,
+                                  const NumericVector &euclids_orchard_height,
                                   const IntegerVector &depths,
                                   const CharacterVector &paths,
                                   const NumericVector &final_lower,
@@ -219,6 +222,7 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
                            _["x"] = x,
                            _["error"] = errors,
                            _["thomae"] = thomae,
+                           _["euclids_orchard_height"] = euclids_orchard_height,
                            _["depth"] = depths,
                            _["path"] = paths,
                            _["lower_uncertainty"] = final_lower,
@@ -238,7 +242,7 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
  //' @param x A numeric vector of values to approximate as fractions.
  //' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
  //' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
- //' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
+ //' @return A DataFrame with columns: num, den, approximation, x, error, thomae, euclids_orchard_height, depth, path,
  //'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
  //'
  // [[Rcpp::export]]
@@ -254,7 +258,7 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
 
    // Pre-allocate result vectors.
    IntegerVector nums(n), dens(n), depths(n);
-   NumericVector approximations(n), errors(n), thomae(n);
+   NumericVector approximations(n), errors(n), thomae(n), euclids_orchard_height(n);
    CharacterVector paths(n);
 
    for (int i = 0; i < n; i++) {
@@ -266,10 +270,11 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
      depths[i]         = res.depth;
      paths[i]          = res.path;
      thomae[i]         = res.thomae;
+     euclids_orchard_height[i] = res.euclids_orchard_height;
    }
 
    return create_result_dataframe(nums, dens, approximations, x, errors,
-                                  thomae, depths, paths,
+                                  thomae, euclids_orchard_height, depths, paths,
                                   final_lower, final_upper, valid_min, valid_max);
  }
 
@@ -284,7 +289,7 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
  //' @param x A numeric vector of values.
  //' @param lower_uncertainty A numeric vector (or scalar) specifying the lower uncertainty bound.
  //' @param upper_uncertainty A numeric vector (or scalar) specifying the upper uncertainty bound.
- //' @return A DataFrame with columns: num, den, approximation, x, error, thomae, depth, path,
+ //' @return A DataFrame with columns: num, den, approximation, x, error, thomae, euclids_orchard_height, depth, path,
  //'         lower_uncertainty, upper_uncertainty, valid_min, valid_max.
  //'
  // [[Rcpp::export]]
@@ -305,7 +310,7 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
 
    // Pre-allocate result vectors.
    IntegerVector nums(n), dens(n), depths(n);
-   NumericVector approximations(n), errors(n), thomae(n);
+   NumericVector approximations(n), errors(n), thomae(n), euclids_orchard_height(n);
    CharacterVector paths(n);
 
    for (int i = 0; i < n; i++) {
@@ -326,9 +331,10 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
      depths[i]         = chosen.depth;
      paths[i]          = chosen.path;
      thomae[i]         = chosen.thomae;
+     euclids_orchard_height[i] = chosen.euclids_orchard_height;
    }
 
    return create_result_dataframe(nums, dens, approximations, x, errors,
-                                  thomae, depths, paths,
+                                  thomae, euclids_orchard_height, depths, paths,
                                   final_lower, final_upper, valid_min, valid_max);
  }
