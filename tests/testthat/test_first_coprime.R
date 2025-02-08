@@ -212,3 +212,16 @@ test_that('paths are symmetrical around 0 and 1', {
 
 })
 
+test_that('inifinte limits are handled', {
+  r = coprimer::first_coprime(3/4, -1/0, 1/0)
+  expect_equal(r$approximation, 0)
+  expect_equal(r$lower_uncertainty, -Inf)
+  expect_equal(r$upper_uncertainty, Inf)
+  expect_equal(r$valid_min, -Inf)
+  expect_equal(r$valid_max, Inf)
+})
+
+test_that('inifinty values are handled', {
+  expect_error(first_coprime(Inf, -1, 1),
+               'x must not be positive or negative infinity.')
+})

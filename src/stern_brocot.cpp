@@ -129,6 +129,21 @@ List prepare_uncertainties(const NumericVector& x,
   NumericVector valid_min = x - lower;
   NumericVector valid_max = x + upper;
 
+  for (int i = 0; i < x.size(); i++) {
+    // Handle Inf and -Inf properly
+    if (std::isinf(lower[i])) {
+      valid_min[i] = R_NegInf;
+    } else {
+      valid_min[i] = x[i] - lower[i];
+    }
+
+    if (std::isinf(upper[i])) {
+      valid_max[i] = R_PosInf;
+    } else {
+      valid_max[i] = x[i] + upper[i];
+    }
+  }
+
   for (int i = 0; i < n; i++) {
     if (valid_min[i] > x[i])
       stop("x[%d] = %f must be greater than or equal to valid_min[%d] = %f",
@@ -164,6 +179,11 @@ inline double round_to_precision(double value, int precision = 15) {
 }
 
 SternBrocotResult compute_fraction(double x, double valid_min, double valid_max) {
+
+  if (std::isinf(x)) {
+    stop("x must not be positive or negative infinity.");
+  }
+
   std::vector<char> path;
   int left_num = -1, left_den = 0;
   int mediant_num = 0, mediant_den = 1;
@@ -303,10 +323,23 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
 
    // For reporting, compute overall valid ranges.
    NumericVector valid_min(n), valid_max(n);
+
    for (int i = 0; i < n; i++) {
-     valid_min[i] = x[i] - final_lower[i];
-     valid_max[i] = x[i] + final_upper[i];
+     // Handle Inf and -Inf properly
+     if (std::isinf(final_lower[i])) {
+       valid_min[i] = R_NegInf;
+     } else {
+       valid_min[i] = x[i] - final_lower[i];
+     }
+
+     if (std::isinf(final_upper[i])) {
+       valid_max[i] = R_PosInf;
+     } else {
+       valid_max[i] = x[i] + final_upper[i];
+     }
    }
+
+
 
    // Pre-allocate result vectors.
    IntegerVector nums(n), dens(n), depths(n);
@@ -315,9 +348,9 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
 
    for (int i = 0; i < n; i++) {
      // Lower candidate: force the fraction to be <= x.
-     SternBrocotResult lowerRes = compute_fraction(x[i], x[i] - final_lower[i], x[i]);
+     SternBrocotResult lowerRes = compute_fraction(x[i], valid_min[i], x[i]);
      // Upper candidate: force the fraction to be >= x.
-     SternBrocotResult upperRes = compute_fraction(x[i], x[i], x[i] + final_upper[i]);
+     SternBrocotResult upperRes = compute_fraction(x[i], x[i], valid_max[i]);
 
      double diffLower = std::abs(lowerRes.approximation - x[i]);
      double diffUpper = std::abs(upperRes.approximation - x[i]);

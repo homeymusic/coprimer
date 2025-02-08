@@ -226,7 +226,7 @@ test_that('the number of inputs and outputs match', {
   x_real       = seq(from=min_x, to=max_x, by=dx)
   sigma_x_lt   = x_real - min_x
   sigma_x_gt   = max_x - x_real
-  x = coprimer::nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
+  x = nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
   expect_equal(length(x_real), nrow(x))
   expect_equal(x$lower_uncertainty, rev(x$upper_uncertainty))
 })
@@ -242,7 +242,7 @@ test_that('the number of inputs and outputs match', {
   x_real       = seq(from=min_x, to=max_x, by=dx)
   sigma_x_lt   = x_real - min_x
   sigma_x_gt   = max_x - x_real
-  x = coprimer::nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
+  x = nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
   expect_equal(length(x_real), nrow(x))
   expect_equal(x$lower_uncertainty, rev(x$upper_uncertainty))
 })
@@ -258,7 +258,21 @@ test_that('the number of inputs and outputs match', {
   x_real       = seq(from=min_x, to=max_x, by=dx)
   sigma_x_lt   = x_real - min_x
   sigma_x_gt   = max_x - x_real
-  x = coprimer::nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
+  x = nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
   expect_equal(length(x_real), nrow(x))
   expect_equal(x$lower_uncertainty, rev(x$upper_uncertainty))
+})
+
+test_that('inifinty limits are handled', {
+  r = nearby_coprime(3/4, -1/0, 1/0)
+  expect_equal(r$approximation, 1)
+  expect_equal(r$lower_uncertainty, -Inf)
+  expect_equal(r$upper_uncertainty, Inf)
+  expect_equal(r$valid_min, -Inf)
+  expect_equal(r$valid_max, Inf)
+})
+
+test_that('inifinty values are handled', {
+  expect_error(nearby_coprime(Inf, -1, 1),
+               'x must not be positive or negative infinity.')
 })
