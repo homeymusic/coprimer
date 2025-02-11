@@ -8,6 +8,8 @@
 using namespace Rcpp;
 using namespace std;
 
+const double epsilon = 1e-15;  // Adjust based on required precision
+
 // Function to insert mediants into a linked list in-place
 void insert_mediants(list<int>& nums,
                      list<int>& dens,
@@ -190,9 +192,7 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   int right_num = 1, right_den = 0;
   double approximation = 0.0;
 
-  const double epsilon = 1e-15;  // Adjust based on required precision
-
-  while ((approximation + epsilon < valid_min) || (approximation - epsilon > valid_max)) {
+  while ((approximation + epsilon <= valid_min) || (approximation - epsilon >= valid_max)) {
     if (approximation < valid_min) {
       left_num = mediant_num;
       left_den = mediant_den;
@@ -348,9 +348,9 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
 
    for (int i = 0; i < n; i++) {
      // Lower candidate: force the fraction to be <= x.
-     SternBrocotResult lowerRes = compute_fraction(x[i], valid_min[i], x[i]);
+     SternBrocotResult lowerRes = compute_fraction(x[i], valid_min[i], epsilon + x[i]);
      // Upper candidate: force the fraction to be >= x.
-     SternBrocotResult upperRes = compute_fraction(x[i], x[i], valid_max[i]);
+     SternBrocotResult upperRes = compute_fraction(x[i], x[i] - epsilon, valid_max[i]);
 
      double diffLower = std::abs(lowerRes.approximation - x[i]);
      double diffUpper = std::abs(upperRes.approximation - x[i]);
