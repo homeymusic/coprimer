@@ -276,3 +276,28 @@ test_that('inifinty values are handled', {
   expect_error(nearby_coprime(Inf, -1, 1),
                'x must not be positive or negative infinity.')
 })
+
+test_that('the number of inputs and outputs match for momentum', {
+  num_samples  = 101
+  num_bins     = 101
+  slit_width   = 3.8
+
+  dx           =  slit_width / num_samples
+  min_x        = -slit_width/2 + dx
+  max_x        =  slit_width/2 - dx
+  x_real       = seq(from=min_x, to=max_x, by=dx)
+  lhd_x   = x_real + slit_width/2
+  rhd_x   = slit_width/2 - x_real
+  x = nearby_coprime(x_real, lhd_x, rhd_x)
+
+  lhd_p   = 1 / lhd_x
+  rhd_p   = 1 / rhd_x
+  p_real  = lhd_p - rhd_p
+  p = coprimer::nearby_coprime(p_real, lhd_p, rhd_p)
+
+  expect_equal(length(p_real), nrow(p))
+  expect_equal(p$lower_uncertainty, rev(p$upper_uncertainty))
+
+
+})
+

@@ -8,7 +8,8 @@
 using namespace Rcpp;
 using namespace std;
 
-const double epsilon = 1e-15;  // Adjust based on required precision
+const double EPSILON = 1e-15;  // Adjust based on required precision
+const double MAX_ITERATIONS = 10000;  // Circuit breaker
 
 // Function to insert mediants into a linked list in-place
 void insert_mediants(list<int>& nums,
@@ -190,9 +191,10 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   int left_num = -1, left_den = 0;
   int mediant_num = 0, mediant_den = 1;
   int right_num = 1, right_den = 0;
+  int depth = 0;
   double approximation = 0.0;
 
-  while ((approximation + epsilon <= valid_min) || (approximation - epsilon >= valid_max)) {
+  while ((approximation + EPSILON <= valid_min) || (approximation - EPSILON >= valid_max)) {
     if (approximation < valid_min) {
       left_num = mediant_num;
       left_den = mediant_den;
@@ -206,6 +208,12 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
     mediant_num = left_num + right_num;
     mediant_den = left_den + right_den;
     approximation = static_cast<double>(mediant_num) / mediant_den;
+    depth++;
+
+    if (depth > MAX_ITERATIONS){
+      stop("valid_min %f, approximation %f, valid_max %f",
+           valid_min , approximation, valid_max);
+    }
   }
 
   SternBrocotResult result;
@@ -348,9 +356,9 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
 
    for (int i = 0; i < n; i++) {
      // Lower candidate: force the fraction to be <= x.
-     SternBrocotResult lowerRes = compute_fraction(x[i], valid_min[i], epsilon + x[i]);
+     SternBrocotResult lowerRes = compute_fraction(x[i], valid_min[i], EPSILON + x[i]);
      // Upper candidate: force the fraction to be >= x.
-     SternBrocotResult upperRes = compute_fraction(x[i], x[i] - epsilon, valid_max[i]);
+     SternBrocotResult upperRes = compute_fraction(x[i], x[i] - EPSILON, valid_max[i]);
 
      double diffLower = std::abs(lowerRes.approximation - x[i]);
      double diffUpper = std::abs(upperRes.approximation - x[i]);
