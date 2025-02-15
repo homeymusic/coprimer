@@ -225,3 +225,29 @@ test_that('inifinty values are handled', {
   expect_error(first_coprime(Inf, -1, 1),
                'x must not be positive or negative infinity.')
 })
+
+test_that('we get interesting values as we change uncertainty tradeoff left and right', {
+  samples = 10000
+  lhd_x = 1:samples/samples
+  rhd_x = rev(lhd_x)
+  x = coprimer::first_coprime(rep(pi,samples), lhd_x, rhd_x)
+
+  expect_equal(length(unique(x$approximation)), 2)
+  expect_equal(x$lower_uncertainty, lhd_x)
+  expect_equal(x$valid_min, pi - lhd_x)
+  expect_equal(x$upper_uncertainty, rhd_x)
+  expect_equal(x$valid_max, pi + rhd_x)
+})
+
+test_that('we get interesting values as we change uncertainty tradeoff left and right', {
+  samples = 10000
+  lhd_x = 1:samples/samples
+  rhd_x = lhd_x
+  x = coprimer::first_coprime(rep(pi,samples), lhd_x, rhd_x)
+
+  expect_equal(length(unique(x$approximation)), 12)
+  expect_equal(x$lower_uncertainty, lhd_x)
+  expect_equal(x$valid_min, pi - lhd_x)
+  expect_equal(x$upper_uncertainty, rhd_x)
+  expect_equal(x$valid_max, pi + rhd_x)
+})

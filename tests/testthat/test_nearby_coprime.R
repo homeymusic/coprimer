@@ -297,7 +297,49 @@ test_that('the number of inputs and outputs match for momentum', {
 
   expect_equal(length(p_real), nrow(p))
   expect_equal(p$lower_uncertainty, rev(p$upper_uncertainty))
-
-
 })
 
+test_that('valid min and valid max are correct', {
+  slit_size      = 1
+  particle_count = 11
+
+  dx           = slit_size/particle_count
+
+  min_x        = -slit_size / 2
+  max_x        =  slit_size / 2
+
+  x_real       = seq(from=min_x + dx, to=max_x-dx, by=dx)
+  lhd_x        = x_real - min_x
+  rhd_x        = max_x - x_real
+  x = coprimer::nearby_coprime(x_real, lhd_x, rhd_x)
+
+  expect_equal(length(unique(x$approximation)), 3)
+  expect_equal(x$lower_uncertainty, lhd_x)
+  expect_equal(x$valid_min, x_real - lhd_x)
+  expect_equal(x$upper_uncertainty, rhd_x)
+  expect_equal(x$valid_max, x_real + rhd_x)
+})
+test_that('we get interesting values as we change uncertainty tradeoff left and right', {
+  samples = 10000
+  lhd_x = 1:samples/samples
+  rhd_x = rev(lhd_x)
+  x = coprimer::nearby_coprime(rep(pi,samples), lhd_x, rhd_x)
+
+  expect_equal(length(unique(x$approximation)), 21)
+  expect_equal(x$lower_uncertainty, lhd_x)
+  expect_equal(x$valid_min, pi - lhd_x)
+  expect_equal(x$upper_uncertainty, rhd_x)
+  expect_equal(x$valid_max, pi + rhd_x)
+})
+test_that('we get interesting values as we change uncertainty', {
+  samples = 10000
+  lhd_x = 1:samples/samples
+  rhd_x = lhd_x
+  x = coprimer::nearby_coprime(rep(pi,samples), lhd_x, rhd_x)
+
+  expect_equal(length(unique(x$approximation)), 6)
+  expect_equal(x$lower_uncertainty, lhd_x)
+  expect_equal(x$valid_min, pi - lhd_x)
+  expect_equal(x$upper_uncertainty, rhd_x)
+  expect_equal(x$valid_max, pi + rhd_x)
+})
