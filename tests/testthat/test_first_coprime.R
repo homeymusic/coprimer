@@ -257,3 +257,8 @@ test_that("large numbers work", {
   x = coprimer::first_coprime(10001,1,1)
   expect_equal(x$approximation, 10000)
 })
+
+test_that("large neg numbers work", {
+  x = coprimer::first_coprime(-10001,1,1)
+  expect_equal(x$approximation, -10000)
+})

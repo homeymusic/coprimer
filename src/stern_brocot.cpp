@@ -198,7 +198,7 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   int right_num = 1, right_den = 0;
   int depth = 0;
   double approximation = 0.0;
-  const double max_iterations = x + 10000;  // Circuit breaker
+  const double max_iterations = std::abs(x) + 10000;  // Circuit breaker
 
   while ((approximation < valid_min) || (approximation > valid_max)) {
     depth++;
@@ -234,7 +234,7 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   result.depth = path.size();
   result.path = std::string(path.begin(), path.end());
   result.thomae = 1.0 / mediant_den;
-  result.euclids_orchard_height = 1.0 / (abs(mediant_num) + mediant_den);
+  result.euclids_orchard_height = 1.0 / (std::abs(mediant_num) + mediant_den);
   return result;
 }
 
