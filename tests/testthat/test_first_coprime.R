@@ -251,3 +251,9 @@ test_that('we get interesting values as we change uncertainty tradeoff left and 
   expect_equal(x$upper_uncertainty, rhd_x)
   expect_equal(x$valid_max, pi + rhd_x)
 })
+
+# test large number
+test_that("large numbers work", {
+  x = coprimer::first_coprime(10001,1,1)
+  expect_equal(x$approximation, 10000)
+})

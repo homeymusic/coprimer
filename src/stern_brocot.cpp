@@ -8,8 +8,6 @@
 using namespace Rcpp;
 using namespace std;
 
-const double MAX_ITERATIONS = 10000;  // Circuit breaker
-
 // Function to insert mediants into a linked list in-place
 void insert_mediants(list<int>& nums,
                      list<int>& dens,
@@ -200,14 +198,16 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   int right_num = 1, right_den = 0;
   int depth = 0;
   double approximation = 0.0;
+  const double max_iterations = x + 10000;  // Circuit breaker
 
   while ((approximation < valid_min) || (approximation > valid_max)) {
     depth++;
-    if (depth >= MAX_ITERATIONS){
-      stop("diff %.20f ~ depth %d >= MAX_ITERATIONS %d ~ \
+    if (depth >= max_iterations){
+      stop("x %.20f valid_max - valid_min %.20f ~ depth %d >= max_iterations %d ~ \
              valid_min %.20f, approximation %.20f, valid_max %.20f ~ %s",
+           x,
            valid_max - valid_min,
-           depth, MAX_ITERATIONS, valid_min, approximation, valid_max,
+           depth, max_iterations, valid_min, approximation, valid_max,
            std::string(path.begin(),path.end()));
     }
     if (approximation < valid_min) {
