@@ -221,9 +221,9 @@ test_that('the number of inputs and outputs match', {
   slit_width   = 0.7
 
   dx           =  slit_width / num_samples
-  min_x        = -slit_width/2 + dx
-  max_x        =  slit_width/2 - dx
-  x_real       = seq(from=min_x, to=max_x, by=dx)
+  min_x        = -slit_width/2
+  max_x        =  slit_width/2
+  x_real       = seq(from=min_x + dx, to=max_x - dx, by=dx)
   sigma_x_lt   = x_real - min_x
   sigma_x_gt   = max_x - x_real
   x = nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
@@ -237,9 +237,9 @@ test_that('the number of inputs and outputs match', {
   slit_width   = 1
 
   dx           =  slit_width / num_samples
-  min_x        = -slit_width/2 + dx
-  max_x        =  slit_width/2 - dx
-  x_real       = seq(from=min_x, to=max_x, by=dx)
+  min_x        = -slit_width/2
+  max_x        =  slit_width/2
+  x_real       = seq(from=min_x+ dx, to=max_x - dx, by=dx)
   sigma_x_lt   = x_real - min_x
   sigma_x_gt   = max_x - x_real
   x = nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
@@ -253,9 +253,9 @@ test_that('the number of inputs and outputs match', {
   slit_width   = 3.8
 
   dx           =  slit_width / num_samples
-  min_x        = -slit_width/2 + dx
-  max_x        =  slit_width/2 - dx
-  x_real       = seq(from=min_x, to=max_x, by=dx)
+  min_x        = -slit_width/2
+  max_x        =  slit_width/2
+  x_real       = seq(from=min_x+dx, to=max_x-dx, by=dx)
   sigma_x_lt   = x_real - min_x
   sigma_x_gt   = max_x - x_real
   x = nearby_coprime(x_real, sigma_x_lt, sigma_x_gt)
@@ -343,3 +343,9 @@ test_that('we get interesting values as we change uncertainty', {
   expect_equal(x$upper_uncertainty, rhd_x)
   expect_equal(x$valid_max, pi + rhd_x)
 })
+
+test_that('valid min and max throw err if the same', {
+  expect_error(nearby_coprime(0.48, 0, 0),
+               'valid_min cannot equal valid_max')
+})
+

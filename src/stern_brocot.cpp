@@ -190,7 +190,7 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   valid_max = round_to_precision(valid_max);
 
   if (valid_min == valid_max) {
-    stop("valid_min cannot equal valid_max ~ valid_min %f, valid_max %f",
+    stop("valid_min cannot equal valid_max ~ valid_min %.20f, valid_max %.20f",
          valid_min, valid_max);
   }
 
