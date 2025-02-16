@@ -8,7 +8,6 @@
 using namespace Rcpp;
 using namespace std;
 
-const double EPSILON = 1e-15;  // Adjust based on required precision
 const double MAX_ITERATIONS = 10000;  // Circuit breaker
 
 // Function to insert mediants into a linked list in-place
@@ -187,6 +186,14 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
     stop("x must not be positive or negative infinity.");
   }
 
+  valid_min = round_to_precision(valid_min);
+  valid_max = round_to_precision(valid_max);
+
+  if (valid_min == valid_max) {
+    stop("valid_min cannot equal valid_max ~ valid_min %f, valid_max %f",
+         valid_min, valid_max);
+  }
+
   std::vector<char> path;
   int left_num = -1, left_den = 0;
   int mediant_num = 0, mediant_den = 1;
@@ -194,12 +201,20 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
   int depth = 0;
   double approximation = 0.0;
 
-  while ((approximation + EPSILON <= valid_min) || (approximation - EPSILON >= valid_max)) {
+  while ((approximation < valid_min) || (approximation > valid_max)) {
+    depth++;
+    if (depth >= MAX_ITERATIONS){
+      stop("diff %.20f ~ depth %d >= MAX_ITERATIONS %d ~ \
+             valid_min %.20f, approximation %.20f, valid_max %.20f ~ %s",
+           valid_max - valid_min,
+           depth, MAX_ITERATIONS, valid_min, approximation, valid_max,
+           std::string(path.begin(),path.end()));
+    }
     if (approximation < valid_min) {
       left_num = mediant_num;
       left_den = mediant_den;
       path.push_back('R'); // move right
-    } else {
+    } else if (approximation > valid_min) {
       right_num = mediant_num;
       right_den = mediant_den;
       path.push_back('L'); // move left
@@ -207,13 +222,8 @@ SternBrocotResult compute_fraction(double x, double valid_min, double valid_max)
 
     mediant_num = left_num + right_num;
     mediant_den = left_den + right_den;
-    approximation = static_cast<double>(mediant_num) / mediant_den;
-    depth++;
+    approximation = round_to_precision(static_cast<double>(mediant_num) / mediant_den);
 
-    if (depth > MAX_ITERATIONS){
-      stop("valid_min %f, approximation %f, valid_max %f",
-           valid_min , approximation, valid_max);
-    }
   }
 
   SternBrocotResult result;
@@ -356,9 +366,9 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
 
    for (int i = 0; i < n; i++) {
      // Lower candidate: force the fraction to be <= x.
-     SternBrocotResult lowerRes = compute_fraction(x[i], valid_min[i], EPSILON + x[i]);
+     SternBrocotResult lowerRes = compute_fraction(x[i], valid_min[i], x[i]);
      // Upper candidate: force the fraction to be >= x.
-     SternBrocotResult upperRes = compute_fraction(x[i], x[i] - EPSILON, valid_max[i]);
+     SternBrocotResult upperRes = compute_fraction(x[i], x[i], valid_max[i]);
 
      double diffLower = std::abs(lowerRes.approximation - x[i]);
      double diffUpper = std::abs(upperRes.approximation - x[i]);
