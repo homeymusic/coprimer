@@ -10,7 +10,9 @@ License: MIT + file LICENSE
 Imports:
     Rcpp (>= 1.0.14),
     ggplot2
-LinkingTo: Rcpp
+LinkingTo: 
+    Rcpp,
+    coprimer
 Suggests: 
     testthat (>= 3.0.0),
     vdiffr
