@@ -389,3 +389,120 @@ DataFrame create_result_dataframe(const IntegerVector &nums,
                                   thomae, euclids_orchard_height, depths, paths,
                                   final_lower, final_upper, valid_min, valid_max);
  }
+
+#include <Rcpp.h>
+#include <cmath>
+#include <limits>
+
+using namespace Rcpp;
+
+// -------------------------------------------------------------------------
+// Helper: pack results into a DataFrame
+// -------------------------------------------------------------------------
+DataFrame rational_fraction_dataframe(const IntegerVector &nums,
+                                      const IntegerVector &dens,
+                                      const NumericVector &approximations,
+                                      const NumericVector &x,
+                                      const NumericVector &errors,
+                                      const NumericVector &thomae,
+                                      const NumericVector &euclids_orchard_height,
+                                      const IntegerVector &depths,
+                                      const CharacterVector &paths,
+                                      const NumericVector &uncertainty) {
+  return DataFrame::create(_["num"] = nums,
+                           _["den"] = dens,
+                           _["approximation"] = approximations,
+                           _["x"] = x,
+                           _["error"] = errors,
+                           _["thomae"] = thomae,
+                           _["euclids_orchard_height"] = euclids_orchard_height,
+                           _["depth"] = depths,
+                           _["path"] = paths,
+                           _["uncertainty"] = uncertainty);
+}
+
+// -------------------------------------------------------------------------
+// Main: Stern–Brocot with direct uncertainty test matching paper pseudocode
+// -------------------------------------------------------------------------
+//' rational_fractions
+ //'
+ //' Approximate each x[i]/x_ref by a coprime fraction num/den within an uncertainty,
+ //' using the exact test |x/x_ref - num/den| >= uncertainty in the loop.
+ //'
+ //' @param x Numeric vector of values to approximate.
+ //' @param x_ref Reference scalar value.
+ //' @param uncertainty Uncertainty threshold for |x/x_ref - num/den|.
+ //' @return DataFrame with columns: num, den, approximation, x, error, thomae,
+ //'         euclids_orchard_height, depth, path, uncertainty.
+ //' @export
+ //' @export
+ // [[Rcpp::export]]
+ DataFrame rational_fractions(const NumericVector& x,
+                              double x_ref,
+                              double uncertainty) {
+   int n = x.size();
+   IntegerVector nums(n), dens(n), depths(n);
+   NumericVector approximations(n), errors(n), thomae(n), euclids_orchard_height(n);
+   CharacterVector paths(n);
+   NumericVector unc(n, uncertainty);
+
+   const int MAX_ITERATIONS = 10000;
+   const double FLOATING_POINT_ERR = std::numeric_limits<double>::epsilon();
+   const double ROUND_FACTOR = 1e15;
+
+   for (int i = 0; i < n; ++i) {
+     double ratio = x[i] / x_ref;
+
+     // Stern–Brocot endpoints
+     int left_num = 0, left_den = 1;
+     int right_num = 1, right_den = 0;
+
+     // initial mediant num/den
+     int mediant_num = left_num + right_num;
+     int mediant_den = left_den + right_den;
+     double mediant = static_cast<double>(mediant_num) / mediant_den;
+
+     int iteration = 1;
+     string path;
+
+     while ((FLOATING_POINT_ERR +
+
+            std::abs(x[i] / x_ref - static_cast<double>(mediant_num) / mediant_den) >= uncertainty)
+
+              && iteration < MAX_ITERATIONS) {
+       if (mediant < ratio) {
+         left_num = mediant_num;  left_den = mediant_den;
+         path.push_back('R');
+       } else {
+         right_num = mediant_num; right_den = mediant_den;
+         path.push_back('L');
+       }
+       mediant_num = left_num + right_num;
+       mediant_den = left_den + right_den;
+       if (mediant_den == 0) break;
+       mediant = std::round((static_cast<double>(mediant_num) / mediant_den)
+                              * ROUND_FACTOR) / ROUND_FACTOR;
+       ++iteration;
+     }
+     if (iteration >= MAX_ITERATIONS) {
+       Rcpp::warning("rational_fractions: max iterations reached for index %d", i);
+     }
+
+     nums[i] = mediant_num;
+     dens[i] = mediant_den;
+     approximations[i] = mediant;
+     errors[i] = mediant - ratio;
+     depths[i] = iteration;
+     paths[i] = path;
+     thomae[i] = (mediant_den ? 1.0 / mediant_den : NA_REAL);
+     euclids_orchard_height[i] =
+       (mediant_den ? 1.0 / (std::abs(mediant_num) + mediant_den) : NA_REAL);
+   }
+
+   return rational_fraction_dataframe(
+     nums, dens, approximations,
+     x, errors, thomae, euclids_orchard_height,
+     depths, paths, unc
+   );
+ }
+

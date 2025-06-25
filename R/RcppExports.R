@@ -10,6 +10,9 @@ NULL
 #' nearby_coprime
 NULL
 
+#' rational_fractions
+NULL
+
 stern_brocot_tree <- function(x) {
     .Call(`_coprimer_stern_brocot_tree`, x)
 }
@@ -20,5 +23,9 @@ first_coprime <- function(x, lower_uncertainty, upper_uncertainty) {
 
 nearby_coprime <- function(x, lower_uncertainty, upper_uncertainty) {
     .Call(`_coprimer_nearby_coprime`, x, lower_uncertainty, upper_uncertainty)
+}
+
+rational_fractions <- function(x, x_ref, uncertainty) {
+    .Call(`_coprimer_rational_fractions`, x, x_ref, uncertainty)
 }
 
