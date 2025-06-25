@@ -10,6 +10,7 @@
 extern "C" SEXP _coprimer_first_coprime(SEXP, SEXP, SEXP);
 extern "C" SEXP _coprimer_stern_brocot_tree(SEXP);
 extern "C" SEXP _coprimer_nearby_coprime(SEXP, SEXP, SEXP);
+extern "C" SEXP _coprimer_rational_fractions(SEXP, SEXP, SEXP);
 
 // this attribute makes Rcpp inject your function into R_init_coprimer()
 //
@@ -24,4 +25,7 @@ void register_coprimer_callables(DllInfo* dll) {
   R_RegisterCCallable("coprimer",
                       "nearby_coprime",
                       (DL_FUNC)&_coprimer_nearby_coprime);
+  R_RegisterCCallable("coprimer",
+                      "rational_fractions",
+                      (DL_FUNC)&_coprimer_rational_fractions);
 }
