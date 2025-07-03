@@ -21,3 +21,7 @@ test_that("plot_stern_brocot_tree(3, 'RLR') matches reference", {
 test_that("plot_stern_brocot_tree(10) matches reference", {
   vdiffr::expect_doppelganger("tree_depth_10_path_LRLRLRLRLR", plot_stern_brocot_tree(10, "LRLRLRLRLR"))
 })
+
+test_that("plot_stern_brocot_tree(5) matches reference", {
+  vdiffr::expect_doppelganger("tree_depth_5_path_RRRLL", plot_stern_brocot_tree(5, "RRRLL"))
+})
