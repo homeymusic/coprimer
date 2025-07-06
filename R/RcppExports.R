@@ -17,10 +17,6 @@ stern_brocot_tree <- function(x) {
     .Call(`_coprimer_stern_brocot_tree`, x)
 }
 
-compute_fraction <- function(x, valid_min, valid_max) {
-    .Call(`_coprimer_compute_fraction`, x, valid_min, valid_max)
-}
-
 first_coprime <- function(x, lower_uncertainty, upper_uncertainty) {
     .Call(`_coprimer_first_coprime`, x, lower_uncertainty, upper_uncertainty)
 }

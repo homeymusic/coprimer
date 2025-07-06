@@ -1,7 +1,7 @@
 #' Plot the Stern-Brocot Tree
 #'
 #' This function generates and plots the Stern-Brocot tree up to a specified depth.
-#' Optionally, it can highlight a specific path within the tree.
+#' Optionally, it can highlight a specific path within the tree and show the traversal depth.
 #'
 #' @param depth Integer (default: 4). The depth of the Stern-Brocot tree to generate.
 #' @param path_str Character (default: ""). A string of "L" (left) and "R" (right)
@@ -17,7 +17,7 @@
 #' - Nodes are labeled using their corresponding fraction representations (`num/den`).
 #' - The tree is plotted using `ggplot2`, with edges drawn between parent and child nodes.
 #' - If `path_str` is provided, it follows the path from the root node ("0/1"),
-#'   moving left ("L") or right ("R"), and highlights that path in black.
+#'   moving left ("L") or right ("R"), highlights that path in black, and shows a depth strip.
 #'
 #' @examples
 #' # Plot the Stern-Brocot tree with default depth
@@ -103,7 +103,7 @@ plot_stern_brocot_tree <- function(depth = 4, path_str = "") {
   tree_color <- if (length(path_str) > 0) "darkgray" else "black"
   base_tree  <- if (length(path_nodes) > 0) tree[-path_nodes, ] else tree
 
-  # Build the plot
+  # Build the main plot
   p <- ggplot2::ggplot() +
     ggplot2::geom_segment(
       data = edges,
@@ -129,6 +129,43 @@ plot_stern_brocot_tree <- function(depth = 4, path_str = "") {
       axis.ticks = ggplot2::element_blank()
     )
 
+  # Add traversal depth strip if highlighting a path
+  if (length(path_nodes) > 0) {
+    # compute a small relative gap for horizontal spacing
+    range_x <- range(tree$x)
+    gap <- diff(range_x) * 0.02
+    x_depth <- max(tree$x) + gap
+    label_offset <- gap * 0.5
+    depth_df <- data.frame(
+      step = seq_along(path_nodes),
+      x0   = x_depth,
+      y    = tree$y[path_nodes]
+    )
+    segments_df <- data.frame(
+      x    = x_depth,
+      xend = x_depth,
+      y    = head(depth_df$y, -1),
+      yend = tail(depth_df$y, -1),
+      step = head(depth_df$step, -1)
+    )
+    p <- p +
+      ggplot2::geom_point(
+        data = depth_df,
+        ggplot2::aes(x = x0, y = y),
+        color = "black", size = 2
+      ) +
+      ggplot2::geom_segment(
+        data = segments_df,
+        ggplot2::aes(x = x, xend = xend, y = y, yend = yend),
+        color = "black", size = 0.8
+      ) +
+      ggplot2::geom_text(
+        data = segments_df,
+        ggplot2::aes(x = xend + label_offset, y = (y + yend) / 2, label = step),
+        hjust = 0, size = 3
+      )
+  }
+
   # Overlay highlight if requested
   if (length(path_nodes) > 0) {
     p <- p +
@@ -153,6 +190,11 @@ plot_stern_brocot_tree <- function(depth = 4, path_str = "") {
         size = 3
       )
   }
+
+  # allow labels to extend beyond plot area
+  p <- p +
+    ggplot2::coord_cartesian(clip = "off") +
+    ggplot2::theme(plot.margin = ggplot2::margin(5, 40, 5, 5))
 
   print(p)
   invisible(p)
