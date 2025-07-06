@@ -21,6 +21,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// compute_fraction
+SternBrocotResult compute_fraction(double x, double valid_min, double valid_max);
+RcppExport SEXP _coprimer_compute_fraction(SEXP xSEXP, SEXP valid_minSEXP, SEXP valid_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type valid_min(valid_minSEXP);
+    Rcpp::traits::input_parameter< double >::type valid_max(valid_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_fraction(x, valid_min, valid_max));
+    return rcpp_result_gen;
+END_RCPP
+}
 // first_coprime
 DataFrame first_coprime(const NumericVector x, const NumericVector lower_uncertainty, const NumericVector upper_uncertainty);
 RcppExport SEXP _coprimer_first_coprime(SEXP xSEXP, SEXP lower_uncertaintySEXP, SEXP upper_uncertaintySEXP) {
@@ -63,6 +76,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_coprimer_stern_brocot_tree", (DL_FUNC) &_coprimer_stern_brocot_tree, 1},
+    {"_coprimer_compute_fraction", (DL_FUNC) &_coprimer_compute_fraction, 3},
     {"_coprimer_first_coprime", (DL_FUNC) &_coprimer_first_coprime, 3},
     {"_coprimer_nearby_coprime", (DL_FUNC) &_coprimer_nearby_coprime, 3},
     {"_coprimer_rational_fractions", (DL_FUNC) &_coprimer_rational_fractions, 3},
